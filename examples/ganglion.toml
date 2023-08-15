@@ -1,0 +1,47 @@
+[account]
+domain = "willmcgugan"
+
+[[apps]]
+name = "Calculator"
+slug = "calculator"
+color = "#00ff00"
+path = "./"
+command = "python calculator.py"
+
+
+[[apps]]
+name = "Easing"
+slug = "easing"
+color = "#2222ff"
+path = "./"
+command = "textual easing"
+
+
+[[apps]]
+name = "Keys"
+slug = "keys"
+color = "#2222ff"
+path = "./"
+command = "textual keys"
+
+
+[[apps]]
+name = "Borders"
+slug = "borders"
+color = "#2222ff"
+path = "./"
+command = "textual borders"
+
+
+[[apps]]
+name = "Demo"
+slug = "demo"
+color = "#2222ff"
+path = "./"
+command = "python -m textual"
+
+#[[apps]]
+#name = "Terminal"
+#slug = "term"
+#path = "./"
+#terminal = true

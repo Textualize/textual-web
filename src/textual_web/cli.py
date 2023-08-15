@@ -16,6 +16,8 @@ from rich.logging import RichHandler
 from rich.text import Text
 import uvloop
 
+from importlib_metadata import version
+
 if constants.DEBUG:
     FORMAT = "%(message)s"
     logging.basicConfig(
@@ -55,6 +57,7 @@ def print_disclaimer() -> None:
 
 
 @click.command()
+@click.version_option(version("textual-web"))
 @click.option("--config", help="Location of config file")
 @click.option(
     "-e",
@@ -79,7 +82,10 @@ def app(
 
     _environment = get_environment(environment)
 
+    VERSION = version("textual-web")
+
     print_disclaimer()
+    log.info(f"textual-web v{VERSION}")
     log.info(f"environment={_environment!r}")
 
     if constants.DEBUG:

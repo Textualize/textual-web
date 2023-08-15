@@ -17,6 +17,7 @@ aiohttp-jinja2 = "^1.5.1"
 pydantic = "^2.1.1"
 xdg = "^6.0.0"
 msgpack = "^1.0.5"
+importlib-metadata = ">=4.11.3"
 
 [build-system]
 requires = ["poetry-core"]

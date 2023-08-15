@@ -321,7 +321,8 @@ class GanglionClient(Handlers):
     async def on_session_close(self, packet: SessionClose) -> None:
         session_id = SessionID(packet.session_id)
         session_process = self.session_manager.get_session(session_id)
-        await self.session_manager.close_session(session_id)
+        if session_process is not None:
+            await self.session_manager.close_session(session_id)
 
     async def on_session_data(self, packet: SessionData) -> None:
         session_process = self.session_manager.get_session_by_route_key(

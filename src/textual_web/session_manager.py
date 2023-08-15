@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 from . import config
 
@@ -17,6 +16,8 @@ log = logging.getLogger("textual-web")
 
 
 class SessionManager:
+    """Manage sessions (Textual apps or terminals)."""
+
     def __init__(self, poll_reader: Poller, path: Path, apps: list[config.App]) -> None:
         self.poll_reader = poll_reader
         self.path = path
@@ -49,6 +50,12 @@ class SessionManager:
             del self.routes[route_key]
 
     async def close_all(self, timeout: float = 3.0) -> None:
+        """Close app sessions.
+
+        Args:
+            timeout: Time (in seconds) to wait before giving up.
+
+        """
         sessions = list(self.sessions.values())
 
         if not sessions:
@@ -75,6 +82,16 @@ class SessionManager:
     async def new_session(
         self, slug: str, session_id: SessionID, route_key: RouteKey
     ) -> Session | None:
+        """Create a new seession.
+
+        Args:
+            slug: Slug for app.
+            session_id: Session identity.
+            route_key: Route key.
+
+        Returns:
+            New session, or `None` if no app / terminal configured.
+        """
         app = self.apps_by_slug.get(slug)
         if app is None:
             return None
@@ -93,15 +110,37 @@ class SessionManager:
         return session_process
 
     async def close_session(self, session_id: SessionID) -> None:
+        """Close a session.
+
+        Args:
+            session_id: Session identity.
+        """
         session_process = self.sessions.get(session_id, None)
         if session_process is None:
             return
         await session_process.close()
 
     def get_session(self, session_id: SessionID) -> Session | None:
+        """Get a session from a session ID.
+
+        Args:
+            session_id: Session identity.
+
+        Returns:
+            A session or `None` if it doesn't exist.
+        """
         return self.sessions.get(session_id)
 
     def get_session_by_route_key(self, route_key: RouteKey) -> Session | None:
+        """Get a session from a route key.
+
+        Args:
+            route_key: A route key.
+
+        Returns:
+            A session or `None` if it doesn't exist.
+
+        """
         session_id = self.routes.get(route_key)
         if session_id is not None:
             return self.sessions.get(session_id)

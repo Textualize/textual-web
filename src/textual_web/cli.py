@@ -76,6 +76,14 @@ def app(
     terminal: bool,
     api_key: str,
 ) -> None:
+    """Main entry point for the CLI.
+
+    Args:
+        config: Path to config.
+        environment: environment switch.
+        terminal: Enable a terminal.
+        api_key: API key.
+    """
     error_console = Console(stderr=True)
     from .config import load_config, default_config
     from .environment import get_environment

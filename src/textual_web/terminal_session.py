@@ -13,20 +13,18 @@ import select
 import termios
 from threading import Thread, Event
 
-
 import rich.repr
 
-from .types import Meta
+from .session import Session, SessionConnector
+from .types import Meta, SessionID
 
 log = logging.getLogger("textual-web")
 
 
-from .session import Session, SessionConnector
-from .types import SessionID
-
-
 @dataclass
 class Write:
+    """Data in a write queue."""
+
     data: bytes
     position: int = 0
     done_event: asyncio.Event = field(default_factory=asyncio.Event)

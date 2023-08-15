@@ -60,29 +60,34 @@ class AppSession(Session):
 
     @property
     def process(self) -> Process:
+        """The asyncio (sub)process"""
         assert self._process is not None
         return self._process
 
     @property
     def stdin(self) -> StreamWriter:
+        """The processes stdin."""
         assert self._process is not None
         assert self._process.stdin is not None
         return self._process.stdin
 
     @property
     def stdout(self) -> StreamReader:
+        """The process' stdout."""
         assert self._process is not None
         assert self._process.stdout is not None
         return self._process.stdout
 
     @property
     def stderr(self) -> StreamReader:
+        """The process' stderr."""
         assert self._process is not None
         assert self._process.stderr is not None
         return self._process.stderr
 
     @property
     def task(self) -> asyncio.Task:
+        """Session task."""
         assert self._task is not None
         return self._task
 

@@ -29,7 +29,7 @@ class Retry:
         self.retry_count = 0
 
     def success(self) -> None:
-        """Called when connection was successful."""
+        """Call when connection was successful."""
         self.retry_count = 0
 
     def done(self) -> None:
@@ -37,6 +37,7 @@ class Retry:
         self._done_event.set()
 
     async def __aiter__(self) -> AsyncGenerator[int, object]:
+        """Async iterator to manage timeouts."""
         while not self._done_event.is_set():
             self.retry_count = self.retry_count + 1
             yield self.retry_count

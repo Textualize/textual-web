@@ -28,7 +28,12 @@ ENVIRONMENTS = {
 
 
 def get_environment(environment: str) -> Environment:
-    """Get an Environment instance for the given environment name."""
+    """Get an Environment instance for the given environment name.
+
+    Returns:
+        A Environment instance.
+
+    """
     try:
         run_environment = ENVIRONMENTS[environment]
     except KeyError:

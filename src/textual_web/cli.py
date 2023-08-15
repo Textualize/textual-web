@@ -85,7 +85,7 @@ def app(
     VERSION = version("textual-web")
 
     print_disclaimer()
-    log.info(f"textual-web v{VERSION}")
+    log.info(f"textual-web version='{VERSION}'")
     log.info(f"environment={_environment!r}")
 
     if constants.DEBUG:

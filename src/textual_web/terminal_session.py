@@ -47,6 +47,14 @@ class Poller(Thread):
         self._exit_event = Event()
 
     def add_file(self, file_descriptor: int) -> asyncio.Queue:
+        """Add a file descriptor to the poller.
+
+        Args:
+            file_descriptor: File descriptor.
+
+        Returns:
+            Async queue.
+        """
         self._poll.register(
             file_descriptor, READABLE_EVENTS | WRITEABLE_EVENTS | ERROR_EVENTS
         )
@@ -54,11 +62,21 @@ class Poller(Thread):
         return queue
 
     def remove_file(self, file_descriptor: int) -> None:
+        """Remove a file descriptor from the poller.
+
+        Args:
+            file_descriptor: File descriptor.
+        """
         self._read_queues.pop(file_descriptor, None)
         self._write_queues.pop(file_descriptor, None)
 
     async def write(self, file_descriptor: int, data: bytes) -> None:
-        """Schedule write to file descriptor, return "done" event."""
+        """Write data to a file descriptor.
+
+        Args:
+            file_descriptor: File descriptor.
+            data: Data to write.
+        """
         if file_descriptor not in self._write_queues:
             self._write_queues[file_descriptor] = deque()
         new_write = Write(data)
@@ -69,9 +87,15 @@ class Poller(Thread):
         await new_write.done_event.wait()
 
     def set_loop(self, loop: asyncio.AbstractEventLoop) -> None:
+        """Set the asyncio loop.
+
+        Args:
+            loop: Async loop.
+        """
         self._loop = loop
 
     def run(self) -> None:
+        """Run the Poller thread."""
         readable_events = READABLE_EVENTS
         writeable_events = WRITEABLE_EVENTS
         error_events = ERROR_EVENTS
@@ -115,6 +139,8 @@ class Poller(Thread):
 
 @rich.repr.auto
 class TerminalSession(Session):
+    """A session that manages a terminal."""
+
     def __init__(
         self,
         poller: Poller,

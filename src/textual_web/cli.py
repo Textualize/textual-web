@@ -58,7 +58,7 @@ def print_disclaimer() -> None:
 
 @click.command()
 @click.version_option(version("textual-web"))
-@click.option("--config", help="Location of config file")
+@click.option("-c", "--config", help="Location of config file", metavar="PATH")
 @click.option(
     "-e",
     "--environment",

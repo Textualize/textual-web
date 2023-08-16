@@ -59,6 +59,7 @@ class Form(Container):
     Form:disabled LoadingIndicator {
         display: block;
         column-span: 2;
+        padding-bottom: 1;
     }
 
     Form Label {
@@ -91,6 +92,7 @@ class PasswordStrength(Widget):
     PasswordStrength {        
         height: 1;
         padding-left: 0;
+        padding-top: 0;
     }
     PasswordStrength > .password-strength--highlight {
         color: $error;

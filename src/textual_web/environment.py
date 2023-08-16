@@ -8,6 +8,7 @@ class Environment:
     """Data structure to describe the environment (dev, prod, local)."""
 
     name: str
+    api_url: str
     url: str
 
 
@@ -18,10 +19,12 @@ ENVIRONMENTS = {
     # ),
     "local": Environment(
         name="local",
+        api_url="ws://127.0.0.1:8080/api",
         url="ws://127.0.0.1:8080/app-service/",
     ),
     "dev": Environment(
         name="dev",
+        api_url="https://textualize-dev.io/api",
         url="wss://textualize-dev.io/app-service/",
     ),
 }

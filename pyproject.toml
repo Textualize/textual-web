@@ -18,6 +18,7 @@ pydantic = "^2.1.1"
 xdg = "^6.0.0"
 msgpack = "^1.0.5"
 importlib-metadata = ">=4.11.3"
+httpx = ">=0.24.1"
 
 [build-system]
 requires = ["poetry-core"]

@@ -218,14 +218,22 @@ class SignupScreen(Screen):
 
     @on(Button.Pressed, "#signup")
     def signup(self):
+        """Initiate signup process."""
         self.disabled = True
         data = {
-            input.id: input.query_one(Input).value for input in self.query(SignupInput)
+            input.id: input.query_one(Input).value
+            for input in self.query(SignupInput)
+            if input.id is not None
         }
         self.send_signup(data)
 
     @work
     async def send_signup(self, data: dict[str, str]) -> None:
+        """Send a post request to the Ganglion server.
+
+        Args:
+            data: Form data.
+        """
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.post(
@@ -233,9 +241,11 @@ class SignupScreen(Screen):
                 )
                 result = response.json()
 
-        except Exception as error:
-            self.notify("Unable to reach server", severity="error")
-            self.log(error)
+        except Exception as request_error:
+            self.notify(
+                "Unable to reach server. Please try again later.", severity="error"
+            )
+            self.log(request_error)
             return
         finally:
             self.disabled = False

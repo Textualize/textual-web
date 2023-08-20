@@ -19,7 +19,7 @@ ENVIRONMENTS = {
     # ),
     "local": Environment(
         name="local",
-        api_url="ws://127.0.0.1:8080/api",
+        api_url="ws://127.0.0.1:8080/api/",
         url="ws://127.0.0.1:8080/app-service/",
     ),
     "dev": Environment(

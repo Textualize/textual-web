@@ -70,11 +70,9 @@ def print_disclaimer() -> None:
 @click.option(
     "-t", "--terminal", is_flag=True, help="Publish a remote terminal on a random URL"
 )
+@click.option("-s", "--signup", is_flag=True, help="Create a textual-web account")
 def app(
-    config: str | None,
-    environment: str,
-    terminal: bool,
-    api_key: str,
+    config: str | None, environment: str, terminal: bool, api_key: str, signup: bool
 ) -> None:
     """Main entry point for the CLI.
 
@@ -84,11 +82,18 @@ def app(
         terminal: Enable a terminal.
         api_key: API key.
     """
+
     error_console = Console(stderr=True)
     from .config import load_config, default_config
     from .environment import get_environment
 
     _environment = get_environment(environment)
+
+    if signup:
+        from .apps.signup import SignUpApp
+
+        SignUpApp.signup(_environment)
+        return
 
     VERSION = version("textual-web")
 

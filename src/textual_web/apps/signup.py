@@ -1,9 +1,12 @@
+import json
+from pathlib import Path
 import re
 import unicodedata
 
 import httpx
-from rich.console import RenderableType
-
+from rich.console import Console, RenderableType
+from rich.panel import Panel
+import xdg
 
 from textual import on
 from textual import work
@@ -13,8 +16,11 @@ from textual.containers import Vertical, Container
 from textual.renderables.bar import Bar
 from textual.reactive import reactive
 from textual.widget import Widget
-from textual.widgets import Label, Input, Button, LoadingIndicator
-from textual.screen import Screen
+from textual.widgets import Label, Input, Button, LoadingIndicator, RichLog
+from textual.screen import ModalScreen, Screen
+
+
+from ..environment import Environment
 
 
 class Form(Container):
@@ -28,7 +34,7 @@ class Form(Container):
         layout: grid;
         grid-size: 2;
         grid-columns: auto 50;
-        grid_rows: auto;  
+        grid-rows: auto;  
         grid-gutter: 1;        
     }
 
@@ -81,9 +87,6 @@ class Form(Container):
     Form Input {
         border: tall transparent;
     }
-
-
-    
     """
 
 
@@ -237,7 +240,7 @@ class SignupScreen(Screen):
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.post(
-                    "http://127.0.0.1:8080/api/signup/", data=data
+                    f"{self.app.environment.api_url}signup/", data=data
                 )
                 result = response.json()
 
@@ -250,25 +253,32 @@ class SignupScreen(Screen):
         finally:
             self.disabled = False
 
-        self.notify("There are errors in the form. Please try again.")
-        self.query_one(Form).add_class("-show-errors")
+        try:
+            result = response.json()
+        except Exception:
+            self.notify(
+                "Server returned an invalid response. Please try again later.",
+                severity="error",
+            )
+            return
 
         for error_label in self.query(ErrorLabel):
             error_label.update("")
             error_label.remove_class("-show-error")
 
-        for error in result:
-            if error["loc"]:
-                error_label = self.query_one(
-                    f"#{error['loc'][0]} ErrorLabel", ErrorLabel
-                )
-                error_label.add_class("-show-error")
-                error_label.update(error["ctx"].get("error", error["msg"]))
-            else:
-                self.notify(
-                    error["ctx"].get("error", error["msg"]), severity="error", timeout=5
-                )
-        self.app.log(result)
+        result_type = result["type"]
+
+        if result_type == "success":
+            self.dismiss(result)
+        elif result_type == "fail":
+            for field, errors in result.get("errors", {}).items():
+                if field == "_":
+                    for error in errors:
+                        self.notify(error, severity="error")
+                else:
+                    error_label = self.query_one(f"#{field} ErrorLabel", ErrorLabel)
+                    error_label.add_class("-show-error")
+                    error_label.update("\n".join(errors))
 
     @on(Input.Changed, "#password Input")
     def input_changed(self, event: Input.Changed):
@@ -295,10 +305,53 @@ class SignupScreen(Screen):
 class SignUpApp(App):
     CSS_PATH = "signup.tcss"
 
+    def __init__(self, environment: Environment) -> None:
+        self.environment = environment
+        super().__init__()
+
     def on_ready(self) -> None:
-        self.push_screen(SignupScreen())
+        self.push_screen(SignupScreen(), callback=self.exit)
 
+    @classmethod
+    def signup(cls, environment: Environment) -> None:
+        console = Console()
+        app = SignUpApp(environment)
+        result = app.run()
 
-if __name__ == "__main__":
-    app = SignUpApp()
-    app.run()
+        if result is None:
+            return
+
+        console.print(
+            Panel.fit("[bold]You have signed up to textual-web!", border_style="green")
+        )
+
+        home_path = xdg.xdg_config_home()
+        config_path = home_path / "textual-web"
+        config_path.mkdir(parents=True, exist_ok=True)
+        auth_path = config_path / "auth.json"
+        auth = {
+            "email": result["user"]["email"],
+            "auth": result["auth_token"]["key"],
+        }
+        auth_path.write_text(json.dumps(auth))
+
+        console.print(f" • Wrote auth to {str(auth_path)!r}")
+        api_key = result["api_key"]["key"]
+        console.print(f" • Your API key is {api_key!r}")
+        ganglion_path = Path("./ganglion.toml")
+
+        CONFIG = f"""\
+[account]
+api_key = "{api_key}"
+"""
+        if ganglion_path.exists():
+            console.print(
+                f" • [red]Not writing to existing {str(ganglion_path)!r}, please update manually."
+            )
+        else:
+            ganglion_path.write_text(CONFIG)
+            console.print(f" • [green]Wrote {str(ganglion_path)!r}")
+
+        console.print()
+
+        console.print("Run 'textual-web --config ganglion.toml' to get started.")

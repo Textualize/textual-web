@@ -160,3 +160,7 @@ def app(
         else:
             uvloop.install()
             asyncio.run(ganglion_client.run())
+
+
+if __name__ == "__main__":
+    app()

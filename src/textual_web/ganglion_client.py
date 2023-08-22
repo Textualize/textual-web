@@ -5,6 +5,7 @@ import logging
 import signal
 from functools import partial
 from pathlib import Path
+import platform
 from typing import TYPE_CHECKING, Union, cast
 
 import aiohttp
@@ -23,6 +24,7 @@ from .types import Meta, RouteKey, SessionID
 if TYPE_CHECKING:
     from .config import Config
 
+WINDOWS = platform.system() == "Windows"
 
 log = logging.getLogger("textual-web")
 
@@ -157,7 +159,8 @@ class GanglionClient(Handlers):
 
     async def _run(self) -> None:
         loop = asyncio.get_event_loop()
-        loop.add_signal_handler(signal.SIGINT, self.on_keyboard_interrupt)
+        if not WINDOWS:
+            loop.add_signal_handler(signal.SIGINT, self.on_keyboard_interrupt)
         self._poller.set_loop(loop)
         self._poller.start()
         self._task = asyncio.create_task(self.connect())

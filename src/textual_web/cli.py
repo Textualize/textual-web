@@ -16,7 +16,6 @@ from .ganglion_client import GanglionClient
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.text import Text
-import uvloop
 
 from importlib_metadata import version
 
@@ -150,9 +149,14 @@ def app(
     if not ganglion_client.app_count:
         ganglion_client.add_app("Welcome", "textual-web --welcome", "welcome")
 
-    if sys.version_info >= (3, 11):
-        with asyncio.Runner(loop_factory=uvloop.new_event_loop) as runner:
-            runner.run(ganglion_client.run())
-    else:
-        uvloop.install()
+    try:
+        import uvloop
+    except ImportError:
         asyncio.run(ganglion_client.run())
+    else:
+        if sys.version_info >= (3, 11):
+            with asyncio.Runner(loop_factory=uvloop.new_event_loop) as runner:
+                runner.run(ganglion_client.run())
+        else:
+            uvloop.install()
+            asyncio.run(ganglion_client.run())

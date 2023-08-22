@@ -24,7 +24,7 @@ ENVIRONMENTS = {
     ),
     "dev": Environment(
         name="dev",
-        api_url="https://textualize-dev.io/api",
+        api_url="https://textualize-dev.io/api/",
         url="wss://textualize-dev.io/app-service/",
     ),
 }

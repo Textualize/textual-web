@@ -87,7 +87,7 @@ class Poller(Thread):
         selector = self._selector
         assert loop is not None
         while not self._exit_event.is_set():
-            events = selector.select(1)
+            events = selector.select(1.0)
 
             for selector_key, event_mask in events:
                 file_descriptor = selector_key.fileobj

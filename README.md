@@ -8,7 +8,7 @@ Currently in a **prototype** stage (pre-beta), but available for testing.
 
 Textual Web is a Python application. But you don't need to be a Python developer to run it.
 
-The easiest way to install Textual Web it is via [pipx](https://pypa.github.io/pipx/).
+The easiest way to install Textual Web is via [pipx](https://pypa.github.io/pipx/).
 Once you have pipx installed, run the following command:
 
 ```python
@@ -60,7 +60,7 @@ Don't share this with anyone you wouldn't trust to have access to your terminal.
 ## Configuration
 
 Textual Web can serve multiple [Textual](https://github.com/Textualize/textual) apps and terminals (as many as you like).
-Do do this, we need to create a TOML file.
+To do this, we need to create a TOML file.
 
 To demonstrate this, install Textual and check out the repository.
 Navigate to the examples directory and add the following file:
@@ -72,7 +72,7 @@ command = "python calculator.py"
 [app."Code Browser"]
 command = "python code_browser.py"
 
-[app."Dictionary"]
+[app.Dictionary]
 command = "python dictionary.py"
 ```
 
@@ -93,7 +93,7 @@ Click any of the links to serve the respective app:
 
 ### Terminal configutation
 
-You can also add a terminal(s) to the configuration file, in a similar way.
+You can also add a terminal to the configuration file, in a similar way.
 
 ```toml
 [terminal.Terminal]
@@ -143,13 +143,13 @@ DEBUG=1 textual-web --config ganglion.toml
 
 Note this may generate a lot of output, and it may even slow your apps down.
 
-## What next?
+## What's next?
 
-The goal of this project is to turn Textual apps in to fully featured web applications.
+The goal of this project is to turn Textual apps into fully featured web applications.
 
 Currently serving Textual apps and terminals appears very similar.
 In fact, if you serve a terminal and then launch a Textual app, it will work just fine in the browser.
-Under the hood, however, Textual app are served using a custom protocol.
+Under the hood, however, Textual apps are served using a custom protocol.
 This protocol will be used to expose web application features to the Textual app.
 
 For example, a Textual app might generate a file (say a CSV with a server report). 

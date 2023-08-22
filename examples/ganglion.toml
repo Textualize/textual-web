@@ -1,42 +1,36 @@
 [account]
 
 
-[[apps]]
-name = "Calculator"
-slug = "calculator"
+[app.Calculator]
 path = "./"
 command = "python calculator.py"
 
 
-[[apps]]
-name = "Easing"
+[app.Easing]
 slug = "easing"
 path = "./"
 command = "textual easing"
 
 
-[[apps]]
-name = "Keys"
+[app.Keys]
 slug = "keys"
 path = "./"
 command = "textual keys"
 
 
-[[apps]]
-name = "Borders"
+[app.Borders]
 slug = "borders"
 path = "./"
 command = "textual borders"
 
 
-[[apps]]
+[app.Demo]
 name = "Demo"
 slug = "demo"
 path = "./"
 command = "python -m textual"
 
-#[[apps]]
-#name = "Terminal"
-#slug = "term"
-#path = "./"
-#terminal = true
+[terminal.Terminal]
+name = "Terminal"
+path = "./"
+terminal = true

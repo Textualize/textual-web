@@ -4,12 +4,8 @@ import asyncio
 from dataclasses import dataclass, field
 from collections import deque
 import os
-import select
+import selectors
 from threading import Thread, Event
-
-READABLE_EVENTS = select.POLLIN | select.POLLPRI
-WRITEABLE_EVENTS = select.POLLOUT
-ERROR_EVENTS = select.POLLERR | select.POLLHUP
 
 @dataclass
 class Write:
@@ -26,8 +22,8 @@ class Poller(Thread):
 
     def __init__(self) -> None:
         super().__init__()
-        self._loop: asyncio.AbstractEventLoop | None = None
-        self._poll = select.poll()
+        self._loop: asyncio.AbstractEventLoop | None = None        
+        self._selector = selectors.DefaultSelector()
         self._read_queues: dict[int, asyncio.Queue[bytes | None]] = {}
         self._write_queues: dict[int, deque[Write]] = {}
         self._exit_event = Event()
@@ -40,9 +36,9 @@ class Poller(Thread):
 
         Returns:
             Async queue.
-        """
-        self._poll.register(
-            file_descriptor, READABLE_EVENTS | WRITEABLE_EVENTS | ERROR_EVENTS
+        """        
+        self._selector.register(
+            file_descriptor, selectors.EVENT_READ | selectors.EVENT_WRITE
         )
         queue = self._read_queues[file_descriptor] = asyncio.Queue()
         return queue
@@ -66,9 +62,9 @@ class Poller(Thread):
         if file_descriptor not in self._write_queues:
             self._write_queues[file_descriptor] = deque()
         new_write = Write(data)
-        self._write_queues[file_descriptor].append(new_write)
-        self._poll.register(
-            file_descriptor, READABLE_EVENTS | WRITEABLE_EVENTS | ERROR_EVENTS
+        self._write_queues[file_descriptor].append(new_write)        
+        self._selector.register(
+            file_descriptor, selectors.EVENT_READ | selectors.EVENT_WRITE
         )
         await new_write.done_event.wait()
 
@@ -82,18 +78,25 @@ class Poller(Thread):
 
     def run(self) -> None:
         """Run the Poller thread."""
-        readable_events = READABLE_EVENTS
-        writeable_events = WRITEABLE_EVENTS
-        error_events = ERROR_EVENTS
+        
+        readable_events = selectors.EVENT_READ
+        writeable_events = selectors.EVENT_WRITE
+
+
         loop = self._loop
+        selector = self._selector
         assert loop is not None
         while not self._exit_event.is_set():
-            poll_result = self._poll.poll(1000)
-            for file_descriptor, event_mask in poll_result:
+            events = selector.select(1)
+
+            for selector_key, event_mask in events:
+                file_descriptor = selector_key.fileobj
+                assert isinstance(file_descriptor, int)
+
                 queue = self._read_queues.get(file_descriptor, None)
                 if queue is not None:
                     if event_mask & readable_events:
-                        data = os.read(file_descriptor, 1024 * 32)
+                        data = os.read(file_descriptor, 1024 * 32) or None
                         loop.call_soon_threadsafe(queue.put_nowait, data)
 
                     if event_mask & writeable_events:
@@ -108,10 +111,6 @@ class Poller(Thread):
                                 loop.call_soon_threadsafe(write.done_event.set)
                             else:
                                 write.position += bytes_written
-
-                    if event_mask & error_events:
-                        loop.call_soon_threadsafe(queue.put_nowait, None)
-                        self._read_queues.pop(file_descriptor, None)
 
     def exit(self) -> None:
         """Exit and block until finished."""

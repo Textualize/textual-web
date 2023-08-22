@@ -145,7 +145,10 @@ class GanglionClient(Handlers):
             await self._run()
         finally:
             # Shut down the poller thread
-            self._poller.exit()
+            try:            
+                self._poller.exit()
+            except Exception:
+                pass
 
     def on_keyboard_interrupt(self) -> None:
         """Signal handler to respond to keyboard interrupt."""

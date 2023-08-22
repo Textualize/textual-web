@@ -54,4 +54,9 @@ This will generate another URL, which will present you with your terminal in you
 
 <img width="1058" alt="Screenshot 2023-08-22 at 09 42 23" src="https://github.com/Textualize/textual-web/assets/554369/1f3b0138-e724-4c90-a335-830717455c19">
 
-When you server a terminal in this way it will generate a new random URL, but note that it is public so don't share it with anyone that you wouldn't trust to have access to yout machine!
+When you serve a terminal in this way it will generate a new random URL, but note that it is public so don't share it with anyone that you wouldn't trust to have access to yout machine!
+
+## Configuration
+
+Textual Web can serve multiple [Textual](https://github.com/Textualize/textual) apps and terminals (as many as you like).
+Do do this, we need to create a TOML file.

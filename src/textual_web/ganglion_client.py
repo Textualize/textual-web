@@ -145,10 +145,11 @@ class GanglionClient(Handlers):
             await self._run()
         finally:
             # Shut down the poller thread
-            try:            
-                self._poller.exit()
-            except Exception:
-                pass
+            if not WINDOWS:
+                try:            
+                    self._poller.exit()
+                except Exception:
+                    pass
 
     def on_keyboard_interrupt(self) -> None:
         """Signal handler to respond to keyboard interrupt."""
@@ -163,9 +164,9 @@ class GanglionClient(Handlers):
     async def _run(self) -> None:
         loop = asyncio.get_event_loop()
         if not WINDOWS:
-            loop.add_signal_handler(signal.SIGINT, self.on_keyboard_interrupt)
-        self._poller.set_loop(loop)
-        self._poller.start()
+            loop.add_signal_handler(signal.SIGINT, self.on_keyboard_interrupt)        
+            self._poller.set_loop(loop)
+            self._poller.start()
         self._task = asyncio.create_task(self.connect())
         await self._task
 

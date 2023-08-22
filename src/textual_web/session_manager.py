@@ -26,8 +26,8 @@ if not WINDOWS:
 class SessionManager:
     """Manage sessions (Textual apps or terminals)."""
 
-    def __init__(self, poll_reader: Poller, path: Path, apps: list[config.App]) -> None:
-        self.poll_reader = poll_reader
+    def __init__(self, poller: Poller, path: Path, apps: list[config.App]) -> None:
+        self.poller = poller
         self.path = path
         self.apps = apps
         self.apps_by_slug = {app.slug: app for app in apps}
@@ -110,7 +110,7 @@ class SessionManager:
                 log.warn("Sorry, textual-web does not currently support terminals on Windows")
                 return None
             else: 
-                session_process = TerminalSession(self.poll_reader, session_id, app.command)
+                session_process = TerminalSession(self.poller, session_id, app.command)
         else:
             session_process = AppSession(self.path, app.command, session_id)
         self.sessions[session_id] = session_process

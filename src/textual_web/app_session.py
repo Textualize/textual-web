@@ -13,7 +13,6 @@ import signal
 from time import monotonic
 from datetime import timedelta
 from pathlib import Path
-import sys
 
 
 import rich.repr

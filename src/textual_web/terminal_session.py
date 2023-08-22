@@ -46,8 +46,7 @@ class TerminalSession(Session):
     async def open(self, argv=None) -> None:
         pid, master_fd = pty.fork()
         self.pid = pid
-        self.master_fd = master_fd
-        print("open")
+        self.master_fd = master_fd        
         if pid == pty.CHILD:
             if argv is None:
                 argv = [self.command]
@@ -78,7 +77,6 @@ class TerminalSession(Session):
         on_close = self._connector.on_close
         try:
             self._set_terminal_size(80, 24)
-
             while True:
                 data = await queue.get() or None
                 if data is None:

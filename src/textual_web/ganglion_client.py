@@ -1,33 +1,24 @@
 from __future__ import annotations
 
-
 import asyncio
-from typing import TYPE_CHECKING, cast, Union
-
-from functools import partial
-import aiohttp
 import logging
-import msgpack
 import signal
+from functools import partial
 from pathlib import Path
+from typing import TYPE_CHECKING, Union, cast
 
-from .packets import (
-    NotifyTerminalSize,
-    SessionClose,
-    SessionData,
-    RoutePing,
-    RoutePong,
-)
+import aiohttp
+import msgpack
 
+from . import constants, packets
 from .environment import Environment
+from .packets import (PACKET_MAP, Handlers, NotifyTerminalSize, Packet,
+                      RoutePing, RoutePong, SessionClose, SessionData)
+from .poller import Poller
+from .retry import Retry
 from .session import SessionConnector
 from .session_manager import SessionManager
-from .types import RouteKey, SessionID, Meta
-from . import packets
-from . import constants
-from .packets import Packet, Handlers, PACKET_MAP
-from .retry import Retry
-from .terminal_session import Poller
+from .types import Meta, RouteKey, SessionID
 
 if TYPE_CHECKING:
     from .config import Config
@@ -80,8 +71,8 @@ class GanglionClient(Handlers):
         self.config = config
         self.api_key = api_key
         self._websocket: aiohttp.ClientWebSocketResponse | None = None
-        self._poll_reader = Poller()
-        self.session_manager = SessionManager(self._poll_reader, path, config.apps)
+        self._poller = Poller()
+        self.session_manager = SessionManager(self._poller, path, config.apps)
         self.exit_event = asyncio.Event()
         self._task: asyncio.Task | None = None
 
@@ -152,7 +143,7 @@ class GanglionClient(Handlers):
             await self._run()
         finally:
             # Shut down the poller thread
-            self._poll_reader.exit()
+            self._poller.exit()
 
     def on_keyboard_interrupt(self) -> None:
         """Signal handler to respond to keyboard interrupt."""
@@ -167,8 +158,8 @@ class GanglionClient(Handlers):
     async def _run(self) -> None:
         loop = asyncio.get_event_loop()
         loop.add_signal_handler(signal.SIGINT, self.on_keyboard_interrupt)
-        self._poll_reader.set_loop(loop)
-        self._poll_reader.start()
+        self._poller.set_loop(loop)
+        self._poller.start()
         self._task = asyncio.create_task(self.connect())
         await self._task
 

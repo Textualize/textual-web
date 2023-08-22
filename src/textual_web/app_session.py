@@ -156,10 +156,7 @@ class AppSession(Session):
     async def close(self) -> None:
         """Close the process."""
         self.state = ProcessState.CLOSING
-        try:
-            self.process.send_signal(signal=signal.SIGINT)
-        except Exception:
-            pass
+        await self.send_meta({"type": "quit"})        
         if self._task:
             await self._task
 
@@ -203,6 +200,8 @@ class AppSession(Session):
             ready = False       
             for _ in range(10):
                 line = await(self.stdout.readline())                       
+                if not line:
+                    break
                 if line == b"__GANGLION__\n":
                     ready = True
                     break

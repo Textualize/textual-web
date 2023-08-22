@@ -149,9 +149,6 @@ def app(
     if not ganglion_client.app_count:
         ganglion_client.add_app("Welcome", "textual-web --welcome", "welcome")
 
-    if constants.DEBUG:
-        log.info("DEBUG mode is enabled (output may be verbose)")
-
     try:
         import uvloop
     except ImportError:

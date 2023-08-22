@@ -93,18 +93,17 @@ class SessionManager:
             New session, or `None` if no app / terminal configured.
         """
         app = self.apps_by_slug.get(slug)
-        if app is None:            
+        if app is None:
             return None
 
         session_process: Session
-        if app.terminal:
-            log.debug(app)
+        if app.terminal:            
             session_process = TerminalSession(self.poll_reader, session_id, app.command)
         else:
             session_process = AppSession(self.path, app.command, session_id)
         self.sessions[session_id] = session_process
         self.routes[route_key] = session_id
-
+        
         await session_process.open()
 
         return session_process

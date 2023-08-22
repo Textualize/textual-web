@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from asyncio import StreamReader, StreamWriter, IncompleteReadError
 from asyncio.subprocess import Process
-from enum import StrEnum, auto
+from enum import Enum, auto
 import io
 import logging
 import json
@@ -13,6 +13,7 @@ import signal
 from time import monotonic
 from datetime import timedelta
 from pathlib import Path
+import sys
 
 
 import rich.repr
@@ -25,7 +26,7 @@ from .types import Meta, SessionID
 log = logging.getLogger("textual-web")
 
 
-class ProcessState(StrEnum):
+class ProcessState(Enum):
     """The state of a process."""
 
     PENDING = auto()
@@ -130,16 +131,16 @@ class AppSession(Session):
         environment["TEXTUAL_DRIVER"] = "textual.drivers.web_driver:WebDriver"
         environment["TEXTUAL_FILTERS"] = "dim"
         environment["TEXTUAL_FPS"] = "60"
-
+        
         cwd = os.getcwd()
-        os.chdir(str(self.working_directory))
+        os.chdir(str(self.working_directory))        
         try:
             self._process = await asyncio.create_subprocess_shell(
                 self.command,
                 stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-                env=environment,
+                env=environment             
             )
         finally:
             os.chdir(cwd)
@@ -147,7 +148,7 @@ class AppSession(Session):
         self.start_time = monotonic()
 
     async def start(self, connector: SessionConnector) -> asyncio.Task:
-        """Start a task to run the process."""
+        """Start a task to run the process."""        
         self._connector = connector
         assert self._task is None
         self._task = asyncio.create_task(self.run())
@@ -199,16 +200,24 @@ class AppSession(Session):
 
         on_data = self._connector.on_data
         on_meta = self._connector.on_meta
-        try:
-            while True:
-                type_bytes = await readexactly(1)
-                size_bytes = await readexactly(4)
-                size = from_bytes(size_bytes, "big")
-                data = await readexactly(size)
-                if type_bytes == DATA:
-                    await on_data(data)
-                elif type_bytes == META:
-                    await on_meta(json.loads(data))
+        try:     
+            ready = False       
+            for _ in range(10):
+                line = await(self.stdout.readline())                       
+                if line == b"__GANGLION__\n":
+                    ready = True
+                    break
+
+            if ready:
+                while True:            
+                    type_bytes = await readexactly(1)                
+                    size_bytes = await readexactly(4)                
+                    size = from_bytes(size_bytes, "big")
+                    data = await readexactly(size)
+                    if type_bytes == DATA:
+                        await on_data(data)
+                    elif type_bytes == META:
+                        await on_meta(json.loads(data))
 
         except IncompleteReadError:
             # Incomplete read means that the stream was closed

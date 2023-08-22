@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "textual_web"
-version = "0.1.0a1"
+version = "0.2.0"
 description = "Serve Textual apps"
 authors = ["Will McGugan <will@textualize.io>"]
 license = "MIT"
@@ -19,6 +19,7 @@ xdg = "^6.0.0"
 msgpack = "^1.0.5"
 importlib-metadata = ">=4.11.3"
 httpx = ">=0.24.1"
+tomli = "^2.0.1"
 
 [build-system]
 requires = ["poetry-core"]

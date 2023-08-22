@@ -2,7 +2,7 @@ from __future__ import annotations
 
 
 import asyncio
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, cast, Union
 
 from functools import partial
 import aiohttp
@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 log = logging.getLogger("textual-web")
 
 
-PacketDataType = int | bytes | str | None
+PacketDataType = Union[int, bytes, str, None]
 
 
 class PacketError(Exception):

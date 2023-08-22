@@ -1,7 +1,7 @@
-from typing import NewType
+from typing import NewType, Union, Dict
 
 
 AppID = NewType("AppID", str)
-Meta = dict[str, str | None | int | bool]
+Meta = Dict[str, Union[str, None, int, bool]]
 RouteKey = NewType("RouteKey", str)
 SessionID = NewType("SessionID", str)

@@ -163,7 +163,7 @@ class TerminalSession(Session):
         pid, master_fd = pty.fork()
         self.pid = pid
         self.master_fd = master_fd
-
+        print("open")
         if pid == pty.CHILD:
             if argv is None:
                 argv = [self.command]

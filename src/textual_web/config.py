@@ -1,9 +1,9 @@
 from os.path import expandvars
-
+from typing import Optional, Dict, List
 
 from typing_extensions import Annotated
 from pathlib import Path
-import tomllib
+import tomli
 
 
 from pydantic import BaseModel, Field
@@ -16,7 +16,7 @@ ExpandVarsStr = Annotated[str, AfterValidator(expandvars)]
 
 
 class Account(BaseModel):
-    api_key: str | None = None
+    api_key: Optional[str] = None
 
 
 class App(BaseModel):
@@ -34,7 +34,7 @@ class Config(BaseModel):
     """Root configuration model."""
 
     account: Account
-    apps: list[App] = Field(default_factory=list)
+    apps: List[App] = Field(default_factory=list)
 
 
 def default_config() -> Config:
@@ -56,11 +56,11 @@ def load_config(config_path: Path) -> Config:
         Config object.
     """
     with Path(config_path).open("rb") as config_file:
-        config_data = tomllib.load(config_file)
+        config_data = tomli.load(config_file)
 
     account = Account(**config_data.get("account", {}))
 
-    def make_app(name, data: dict[str, object], terminal: bool = False) -> App:
+    def make_app(name, data: Dict[str, object], terminal: bool = False) -> App:
         data["name"] = name
         data["terminal"] = terminal
         if terminal:

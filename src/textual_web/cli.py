@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import click
 from pathlib import Path
@@ -73,7 +75,12 @@ def print_disclaimer() -> None:
 @click.option("-s", "--signup", is_flag=True, help="Create a textual-web account")
 @click.option("--welcome", is_flag=True, help="Launch an example app")
 def app(
-    config: str | None, environment: str, terminal: bool, api_key: str, signup: bool, welcome:bool,
+    config: str | None,
+    environment: str,
+    terminal: bool,
+    api_key: str,
+    signup: bool,
+    welcome: bool,
 ) -> None:
     """Main entry point for the CLI.
 
@@ -95,9 +102,10 @@ def app(
 
         SignUpApp.signup(_environment)
         return
-    
+
     if welcome:
         from .apps.welcome import WelcomeApp
+
         WelcomeApp().run()
         return
 
@@ -140,9 +148,7 @@ def app(
         )
 
     if not ganglion_client.app_count:
-        ganglion_client.add_app(
-            "Welcome", "textual-web --welcome", "welcome"
-        )
+        ganglion_client.add_app("Welcome", "textual-web --welcome", "welcome")
 
     if sys.version_info >= (3, 11):
         with asyncio.Runner(loop_factory=uvloop.new_event_loop) as runner:

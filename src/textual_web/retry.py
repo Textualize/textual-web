@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import AsyncGenerator
-from asyncio import Event, timeout, TimeoutError
+from asyncio import Event, TimeoutError, wait_for
 from random import random
 import logging
 
@@ -48,7 +48,6 @@ class Retry:
             log.debug("Retrying after %dms", int(sleep_for * 1000.0))
 
             try:
-                async with timeout(sleep_for):
-                    await self._done_event.wait()
+                await wait_for(self._done_event.wait(), sleep_for)
             except TimeoutError:
                 pass

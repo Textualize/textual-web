@@ -216,6 +216,7 @@ class AppSession(Session):
                         await on_data(data)
                     elif type_bytes == META:
                         await on_meta(json.loads(data))
+                        log.info(data.decode("utf-8"))
 
         except IncompleteReadError:
             # Incomplete read means that the stream was closed

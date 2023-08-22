@@ -27,14 +27,16 @@ textual-web
 
 You should see something like the following:
 
-<img width="1002" alt="Screenshot 2023-08-22 at 09 41 08" src="https://github.com/Textualize/textual-web/assets/554369/cc61edf8-0396-4dbc-b3b6-5573986143cd">
+<img width="1002" alt="Screenshot 2023-08-22 at 09 41 08" src="https://github.com/Textualize/textual-web/assets/554369/2e84f6d1-ad40-46ac-9ac3-16f1040f6ce6">
+
 
 Click the blue link to launch the example Textual app (you may need to hold cmd or ctrl on some terminals).
 Or copy the link to your browser if your terminal doesn't support links.
 
 You should see something like this in your browser:
 
-<img width="1058" alt="Screenshot 2023-08-22 at 09 41 35" src="https://github.com/Textualize/textual-web/assets/554369/654f670b-a90c-46e6-89df-ed3a7daabf4a">
+<img width="1058" alt="Screenshot 2023-08-22 at 09 41 35" src="https://github.com/Textualize/textual-web/assets/554369/93f70177-7b3c-4840-8265-4d8ec96c5ebc">
+
 
 You are seeing a simple Textual application.
 This app is running on your machine, but is available via a public URL.
@@ -52,7 +54,9 @@ textual-web -t
 
 This will generate another URL, which will present you with your terminal in your browser:
 
-<img width="1058" alt="Screenshot 2023-08-22 at 09 42 23" src="https://github.com/Textualize/textual-web/assets/554369/1f3b0138-e724-4c90-a335-830717455c19">
+
+<img width="1058" alt="Screenshot 2023-08-22 at 09 42 23" src="https://github.com/Textualize/textual-web/assets/554369/99b10778-2183-4cce-9154-052a80cf6c34">
+
 
 When you serve a terminal in this way it will generate a random public URL.
 Don't share this with anyone you wouldn't trust to have access to your terminal.
@@ -85,11 +89,14 @@ textual-web --config serve.toml
 
 You should now get 3 links, one for each of the secions in the configuration:
 
-<img width="1145" alt="Screenshot 2023-08-22 at 10 37 59" src="https://github.com/Textualize/textual-web/assets/554369/8e6e8248-7d77-4d77-af03-70f1a9147bf3">
+
+<img width="1145" alt="Screenshot 2023-08-22 at 10 37 59" src="https://github.com/Textualize/textual-web/assets/554369/81b966de-e95a-4672-83b9-b95c2029b942">
+
 
 Click any of the links to serve the respective app:
 
-<img width="1131" alt="Screenshot 2023-08-22 at 10 42 25" src="https://github.com/Textualize/textual-web/assets/554369/fb4b6ad2-3431-41bc-b7b3-5cfd81e1eab8">
+
+<img width="1131" alt="Screenshot 2023-08-22 at 10 42 25" src="https://github.com/Textualize/textual-web/assets/554369/d25f3061-bc98-48b9-b4d0-1bab61d401b1">
 
 ### Terminal configutation
 
@@ -113,7 +120,9 @@ textual-web --signup
 
 This will bring up a dialog in your terminal that looks something like this:
 
-<img width="1145" alt="Screenshot 2023-08-22 at 10 49 54" src="https://github.com/Textualize/textual-web/assets/554369/539fd8bc-c218-48b9-a00f-31855e7a4306">
+
+<img width="1145" alt="Screenshot 2023-08-22 at 09 43 03" src="https://github.com/Textualize/textual-web/assets/554369/9601eee1-7733-4e8a-a401-78402cfd1cca">
+
 
 If you fill in that dialog, it will create an account for you and generate a file called "ganglion.toml".
 At the top of that file you will see a section like the following:

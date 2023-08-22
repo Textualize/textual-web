@@ -3,17 +3,25 @@ from __future__ import annotations
 import asyncio
 import logging
 from pathlib import Path
+import platform
 
 from . import config
 
 from .session import Session
 from .app_session import AppSession
-from .terminal_session import TerminalSession, Poller
+
+from .poller import Poller
 from .types import SessionID, RouteKey
 from ._two_way_dict import TwoWayDict
 
+WINDOWS = platform.system() == "Windows"
+
+
 log = logging.getLogger("textual-web")
 
+
+if not WINDOWS:
+    from .terminal_session import TerminalSession
 
 class SessionManager:
     """Manage sessions (Textual apps or terminals)."""
@@ -97,8 +105,12 @@ class SessionManager:
             return None
 
         session_process: Session
-        if app.terminal:            
-            session_process = TerminalSession(self.poll_reader, session_id, app.command)
+        if app.terminal:           
+            if WINDOWS:
+                log.warn("Sorry, textual-web does not currently support terminals on Windows")
+                return None
+            else: 
+                session_process = TerminalSession(self.poll_reader, session_id, app.command)
         else:
             session_process = AppSession(self.path, app.command, session_id)
         self.sessions[session_id] = session_process

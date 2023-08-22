@@ -316,7 +316,9 @@ class GanglionClient(Handlers):
             SessionID(packet.session_id),
             RouteKey(packet.route_key),
         )
-        assert session_process is not None  # TODO: handle session open failed
+        if session_process is None:
+            log.debug("Failed to create session")
+            return        
 
         connector = _ClientConnector(
             self, cast(SessionID, packet.session_id), cast(RouteKey, route_key)

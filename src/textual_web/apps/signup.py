@@ -16,8 +16,8 @@ from textual.containers import Vertical, Container
 from textual.renderables.bar import Bar
 from textual.reactive import reactive
 from textual.widget import Widget
-from textual.widgets import Label, Input, Button, LoadingIndicator, RichLog
-from textual.screen import ModalScreen, Screen
+from textual.widgets import Label, Input, Button, LoadingIndicator
+from textual.screen import Screen
 
 
 from ..environment import Environment

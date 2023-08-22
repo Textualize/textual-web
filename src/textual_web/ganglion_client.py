@@ -85,6 +85,11 @@ class GanglionClient(Handlers):
         self.exit_event = asyncio.Event()
         self._task: asyncio.Task | None = None
 
+    @property
+    def app_count(self) -> int:
+        """The number of configured apps."""
+        return len(self.session_manager.apps)
+
     def add_app(self, name: str, command: str, slug: str = "") -> None:
         """Add a new app
 

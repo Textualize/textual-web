@@ -71,8 +71,9 @@ def print_disclaimer() -> None:
     "-t", "--terminal", is_flag=True, help="Publish a remote terminal on a random URL"
 )
 @click.option("-s", "--signup", is_flag=True, help="Create a textual-web account")
+@click.option("--welcome", is_flag=True, help="Launch an example app")
 def app(
-    config: str | None, environment: str, terminal: bool, api_key: str, signup: bool
+    config: str | None, environment: str, terminal: bool, api_key: str, signup: bool, welcome:bool,
 ) -> None:
     """Main entry point for the CLI.
 
@@ -93,6 +94,11 @@ def app(
         from .apps.signup import SignUpApp
 
         SignUpApp.signup(_environment)
+        return
+    
+    if welcome:
+        from .apps.welcome import WelcomeApp
+        WelcomeApp().run()
         return
 
     VERSION = version("textual-web")
@@ -131,6 +137,11 @@ def app(
     if terminal:
         ganglion_client.add_terminal(
             "Terminal", os.environ.get("SHELL", "bin/sh"), identity.generate().lower()
+        )
+
+    if not ganglion_client.app_count:
+        ganglion_client.add_app(
+            "Welcome", "textual-web --welcome", "welcome"
         )
 
     if sys.version_info >= (3, 11):

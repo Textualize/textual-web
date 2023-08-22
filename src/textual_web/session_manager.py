@@ -93,7 +93,7 @@ class SessionManager:
             New session, or `None` if no app / terminal configured.
         """
         app = self.apps_by_slug.get(slug)
-        if app is None:
+        if app is None:            
             return None
 
         session_process: Session

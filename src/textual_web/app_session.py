@@ -223,8 +223,9 @@ class AppSession(Session):
                     if type_bytes == DATA:
                         await on_data(data)
                     elif type_bytes == META:
-                        await on_meta(json.loads(data))
                         log.info(data.decode("utf-8"))
+                        await on_meta(json.loads(data))
+                        
 
         except IncompleteReadError:
             # Incomplete read means that the stream was closed
@@ -282,8 +283,13 @@ class AppSession(Session):
         Returns:
             True if the data was sent, otherwise False.
         """
+        log.info("meta %s", data)
         stdin = self.stdin
+        log.info("1")
         data_bytes = json.dumps(data).encode("utf-8")
+        log.info("2")
         stdin.write(self.encode_packet(b"M", data_bytes))
+        log.info("3")
         await stdin.drain()
+        log.info("4")
         return True

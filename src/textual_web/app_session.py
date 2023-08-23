@@ -214,6 +214,7 @@ class AppSession(Session):
                     type_bytes = await readexactly(1)                
                     size_bytes = await readexactly(4)                
                     size = from_bytes(size_bytes, "big")
+                    print(type_bytes, size_bytes)
                     data = await readexactly(size)
                     if type_bytes == DATA:
                         await on_data(data)

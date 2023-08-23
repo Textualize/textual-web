@@ -159,10 +159,16 @@ class AppSession(Session):
         self.state = ProcessState.CLOSING
         log.info("sending meta")
         await self.send_meta({"type": "quit"})        
+        
+        log.info("done close")
+
+    async def wait(self) -> None:
+        """Wait for the process to finish (call close first)."""
+        log.info("waiting for close")
         if self._task:
             log.info("awaiting task")
-            await self._task        
-        log.info("done close")
+            await self._task
+        log.info("%s awaited", self) 
 
     async def set_terminal_size(self, width: int, height: int) -> None:
         """Set the terminal size for the process.

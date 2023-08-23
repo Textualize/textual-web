@@ -5,6 +5,7 @@ import click
 from pathlib import Path
 import logging
 import os
+import platform
 from rich.panel import Panel
 import sys
 
@@ -18,6 +19,8 @@ from rich.logging import RichHandler
 from rich.text import Text
 
 from importlib_metadata import version
+
+WINDOWS = platform.system() == "Windows"
 
 if constants.DEBUG:
     FORMAT = "%(message)s"
@@ -149,17 +152,20 @@ def app(
     if not ganglion_client.app_count:
         ganglion_client.add_app("Welcome", "textual-web --welcome", "welcome")
 
-    try:
-        import uvloop
-    except ImportError:
+    if WINDOWS:
         asyncio.run(ganglion_client.run())
     else:
-        if sys.version_info >= (3, 11):
-            with asyncio.Runner(loop_factory=uvloop.new_event_loop) as runner:
-                runner.run(ganglion_client.run())
-        else:
-            uvloop.install()
+        try:
+            import uvloop
+        except ImportError: 
             asyncio.run(ganglion_client.run())
+        else:
+            if sys.version_info >= (3, 11):
+                with asyncio.Runner(loop_factory=uvloop.new_event_loop) as runner:
+                    runner.run(ganglion_client.run())
+            else:
+                uvloop.install()
+                asyncio.run(ganglion_client.run())
 
 
 if __name__ == "__main__":

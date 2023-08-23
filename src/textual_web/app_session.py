@@ -215,7 +215,7 @@ class AppSession(Session):
                     if type_bytes not in (DATA, META):
                         c = await readexactly(1)            
                         if c == b"\n":
-                            continue
+                            break
                     size_bytes = await readexactly(4)                
                     size = from_bytes(size_bytes, "big")                    
                     data = await readexactly(size)

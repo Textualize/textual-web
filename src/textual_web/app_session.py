@@ -159,6 +159,8 @@ class AppSession(Session):
         await self.send_meta({"type": "quit"})        
         if self._task:
             await self._task
+        if self._process is not None:
+            await self._process.wait()
 
     async def set_terminal_size(self, width: int, height: int) -> None:
         """Set the terminal size for the process.

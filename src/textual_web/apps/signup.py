@@ -79,7 +79,7 @@ class Form(Container):
         width: 100%;
     }
 
-    Form .group > * {
+    Form .group > PasswordStrength {
        padding: 0 1;
        color: $text-muted;
     }

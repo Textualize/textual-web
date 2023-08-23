@@ -213,6 +213,7 @@ class AppSession(Session):
                 while True:            
                     type_bytes = await readexactly(1)    
                     if type_bytes not in (DATA, META):
+                        log.info("unexpected first bytes: %s", type_bytes)
                         c = await readexactly(1)            
                         if c == b"\n":
                             break

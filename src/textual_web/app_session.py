@@ -158,12 +158,9 @@ class AppSession(Session):
         self.state = ProcessState.CLOSING
         log.info("sending meta")
         await self.send_meta({"type": "quit"})        
-        # if self._task:
-        #     log.info("awaiting task")
-        #     await self._task
-        # if self._process is not None:
-        #     log.info("awaiting process")
-        #     await self._process.wait()
+        if self._task:
+            log.info("awaiting task")
+            await self._task        
         log.info("done close")
 
     async def set_terminal_size(self, width: int, height: int) -> None:

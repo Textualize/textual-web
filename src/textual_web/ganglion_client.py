@@ -163,10 +163,17 @@ class GanglionClient(Handlers):
 
     async def _run(self) -> None:
         loop = asyncio.get_event_loop()
-        if not WINDOWS:
+        if WINDOWS:
+            def exit_handler(signal_handler, stack_frame) -> None:
+                """Signal handler."""
+                self.on_keyboard_interrupt()
+
+            signal.signal(signal.SIGINT, exit_handler)            
+        else:
             loop.add_signal_handler(signal.SIGINT, self.on_keyboard_interrupt)        
             self._poller.set_loop(loop)
             self._poller.start()
+        
         self._task = asyncio.create_task(self.connect())
         await self._task
 

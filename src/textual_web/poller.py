@@ -61,11 +61,12 @@ class Poller(Thread):
         """
         if file_descriptor not in self._write_queues:
             self._write_queues[file_descriptor] = deque()
+            self._selector.register(
+                file_descriptor, selectors.EVENT_READ | selectors.EVENT_WRITE
+            )
         new_write = Write(data)
         self._write_queues[file_descriptor].append(new_write)        
-        self._selector.register(
-            file_descriptor, selectors.EVENT_READ | selectors.EVENT_WRITE
-        )
+
         await new_write.done_event.wait()
 
     def set_loop(self, loop: asyncio.AbstractEventLoop) -> None:

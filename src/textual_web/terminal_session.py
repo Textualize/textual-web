@@ -87,6 +87,7 @@ class TerminalSession(Session):
         finally:
             await on_close()
             os.close(self.master_fd)
+            self.poller.remove_file(self.master_fd)
             self.master_fd = None
 
     async def send_bytes(self, data: bytes) -> bool:

@@ -60,13 +60,10 @@ class Poller(Thread):
             data: Data to write.
         """
         if file_descriptor not in self._write_queues:
-            self._write_queues[file_descriptor] = deque()
-            self._selector.register(
-                file_descriptor, selectors.EVENT_READ | selectors.EVENT_WRITE
-            )
+            self._write_queues[file_descriptor] = deque()            
         new_write = Write(data)
         self._write_queues[file_descriptor].append(new_write)        
-
+        self._selector.modify(file_descriptor, selectors.EVENT_READ | selectors.EVENT_WRITE)
         await new_write.done_event.wait()
 
     def set_loop(self, loop: asyncio.AbstractEventLoop) -> None:
@@ -90,15 +87,19 @@ class Poller(Thread):
         while not self._exit_event.is_set():
             events = selector.select(1)
 
-            for selector_key, event_mask in events:
+            for selector_key, event_mask in events:                
                 file_descriptor = selector_key.fileobj
                 assert isinstance(file_descriptor, int)
 
                 queue = self._read_queues.get(file_descriptor, None)
                 if queue is not None:
                     if event_mask & readable_events:
-                        data = os.read(file_descriptor, 1024 * 32) or None
-                        loop.call_soon_threadsafe(queue.put_nowait, data)
+                        try:
+                            data = os.read(file_descriptor, 1024 * 32) or None
+                        except Exception:
+                            pass
+                        else:
+                            loop.call_soon_threadsafe(queue.put_nowait, data)
 
                     if event_mask & writeable_events:
                         write_queue = self._write_queues.get(file_descriptor, None)
@@ -112,6 +113,8 @@ class Poller(Thread):
                                 loop.call_soon_threadsafe(write.done_event.set)
                             else:
                                 write.position += bytes_written
+                        else:
+                            selector.modify(file_descriptor, readable_events)
 
     def exit(self) -> None:
         """Exit and block until finished."""

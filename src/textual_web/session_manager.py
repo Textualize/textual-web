@@ -88,7 +88,7 @@ class SessionManager:
             log.warning("%s session(s) didn't close after %s seconds", timeout)
 
     async def new_session(
-        self, slug: str, session_id: SessionID, route_key: RouteKey
+        self, slug: str, session_id: SessionID, route_key: RouteKey, devtools:bool =False
     ) -> Session | None:
         """Create a new seession.
 
@@ -96,6 +96,7 @@ class SessionManager:
             slug: Slug for app.
             session_id: Session identity.
             route_key: Route key.
+            devtools: Enable devtools in Textual apps
 
         Returns:
             New session, or `None` if no app / terminal configured.

@@ -46,10 +46,12 @@ class AppSession(Session):
         working_directory: Path,
         command: str,
         session_id: SessionID,
+        devtools: bool = False
     ) -> None:
         self.working_directory = working_directory
         self.command = command
         self.session_id = session_id
+        self.devtools = devtools
         self.start_time: float | None = None
         self.end_time: float | None = None
         self._process: Process | None = None
@@ -130,7 +132,8 @@ class AppSession(Session):
         environment["TEXTUAL_DRIVER"] = "textual.drivers.web_driver:WebDriver"
         environment["TEXTUAL_FILTERS"] = "dim"
         environment["TEXTUAL_FPS"] = "60"
-        environment["TEXTUAL"] = "debug,devtools"
+        if self.devtools:
+            environment["TEXTUAL"] = "debug,devtools"
         
         cwd = os.getcwd()
         os.chdir(str(self.working_directory))        

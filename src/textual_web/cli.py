@@ -72,6 +72,9 @@ def print_disclaimer() -> None:
 )
 @click.option("-a", "--api-key", help="API key", default=constants.API_KEY)
 @click.option(
+    "--devtools", is_flag=True, help="Enable devtools in Textual apps", default=False
+)
+@click.option(
     "-t", "--terminal", is_flag=True, help="Publish a remote terminal on a random URL"
 )
 @click.option("-s", "--signup", is_flag=True, help="Create a textual-web account")
@@ -79,6 +82,7 @@ def print_disclaimer() -> None:
 def app(
     config: str | None,
     environment: str,
+    devtools: bool,
     terminal: bool,
     api_key: str,
     signup: bool,
@@ -89,6 +93,7 @@ def app(
     Args:
         config: Path to config.
         environment: environment switch.
+        devtools: Enable devtools.
         terminal: Enable a terminal.
         api_key: API key.
     """
@@ -140,8 +145,15 @@ def app(
 
         print(_config)
 
+    if devtools:
+        log.info("Devtools enabled in Textual apps (run textual console)")
+
     ganglion_client = GanglionClient(
-        config or "./", _config, _environment, api_key=api_key or None
+        config or "./",
+        _config,
+        _environment,
+        api_key=api_key or None,
+        devtools=devtools,
     )
 
     if terminal:
@@ -157,7 +169,7 @@ def app(
     else:
         try:
             import uvloop
-        except ImportError: 
+        except ImportError:
             asyncio.run(ganglion_client.run())
         else:
             if sys.version_info >= (3, 11):

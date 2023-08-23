@@ -65,6 +65,7 @@ class GanglionClient(Handlers):
         config: Config,
         environment: Environment,
         api_key: str | None,
+        devtools: bool = False
     ) -> None:
         self.environment = environment
         self.websocket_url = environment.url
@@ -72,6 +73,7 @@ class GanglionClient(Handlers):
         path = Path(config_path).absolute().parent
         self.config = config
         self.api_key = api_key
+        self._devtools = devtools
         self._websocket: aiohttp.ClientWebSocketResponse | None = None
         self._poller = Poller()
         self.session_manager = SessionManager(self._poller, path, config.apps)
@@ -323,6 +325,7 @@ class GanglionClient(Handlers):
             packet.application_slug,
             SessionID(packet.session_id),
             RouteKey(packet.route_key),
+            devtools=self._devtools
         )
         if session_process is None:
             log.debug("Failed to create session")

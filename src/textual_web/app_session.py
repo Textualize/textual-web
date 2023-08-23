@@ -235,8 +235,8 @@ class AppSession(Session):
 
         stderr_message = stderr_data.getvalue().decode("utf-8", errors="replace")
         if self._process is not None and self._process.returncode != 0:
-            log.info("%s reported errors", self)
-            if stderr_message:
+            log.info("%s returned error code=%s", self, self._process.returncode)
+            if constants.DEBUG and stderr_message:
                 log.warning(stderr_message)
 
         await self._connector.on_close()

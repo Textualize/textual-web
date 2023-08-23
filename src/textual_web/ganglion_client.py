@@ -101,7 +101,10 @@ class GanglionClient(Handlers):
             command: Command to run the app.
             slug: Slug used in URL, or blank to auto-generate on server.
         """
-        self.session_manager.add_app(name, command, slug=slug, terminal=True)
+        if WINDOWS:
+            log.warning("Sorry, textual-web does not currently support terminals on Windows")
+        else:
+            self.session_manager.add_app(name, command, slug=slug, terminal=True)
 
     @classmethod
     def decode_envelope(

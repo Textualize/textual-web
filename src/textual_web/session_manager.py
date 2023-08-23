@@ -129,8 +129,7 @@ class SessionManager:
         session_process = self.sessions.get(session_id, None)
         if session_process is None:
             return
-        asyncio.create_task(session_process.close())
-        # await session_process.close()
+        await session_process.close()
 
     def get_session(self, session_id: SessionID) -> Session | None:
         """Get a session from a session ID.

@@ -130,6 +130,7 @@ class AppSession(Session):
         environment["TEXTUAL_DRIVER"] = "textual.drivers.web_driver:WebDriver"
         environment["TEXTUAL_FILTERS"] = "dim"
         environment["TEXTUAL_FPS"] = "60"
+        environment["TEXTUAL"] = "debug,devtools"
         
         cwd = os.getcwd()
         os.chdir(str(self.working_directory))        

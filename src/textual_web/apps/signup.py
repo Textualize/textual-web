@@ -28,14 +28,14 @@ class Form(Container):
     Form {
         color: $text;
         width: auto;
-        height: auto;        
-        background: $boost;           
-        padding: 1 2;      
+        height: auto;
+        background: $boost;
+        padding: 1 2;
         layout: grid;
         grid-size: 2;
         grid-columns: auto 50;
-        grid-rows: auto;  
-        grid-gutter: 1;        
+        grid-rows: auto;
+        grid-gutter: 1;
     }
 
     Form .title {
@@ -43,8 +43,8 @@ class Form(Container):
         text-align: center;
         text-style: bold;
         margin-bottom: 2;
-        width: 100%;    
-        column-span: 2;    
+        width: 100%;
+        column-span: 2;
     }
 
     Form Button {
@@ -55,12 +55,12 @@ class Form(Container):
     LoadingIndicator {
         width: 100%;
         height: 3 !important;
-        margin: 2 1 0 1;        
+        margin: 2 1 0 1;
         display: none;
     }
     Form:disabled Button {
         display: none;
-        
+
     }
     Form:disabled LoadingIndicator {
         display: block;
@@ -69,14 +69,14 @@ class Form(Container):
     }
 
     Form Label {
-        width: 100%;        
+        width: 100%;
         text-align: right;
         padding: 1 0 0 1;
     }
 
     Form .group {
-        height: auto;    
-        width: 100%;     
+        height: auto;
+        width: 100%;
     }
 
     Form .group > * {
@@ -92,14 +92,14 @@ class Form(Container):
 
 class PasswordStrength(Widget):
     DEFAULT_CSS = """
-    PasswordStrength {        
+    PasswordStrength {
         height: 1;
         padding-left: 0;
         padding-top: 0;
     }
     PasswordStrength > .password-strength--highlight {
         color: $error;
-       
+
     }
     PasswordStrength > .password-strength--back {
         color: $foreground 10%;
@@ -161,7 +161,7 @@ def slugify(value: str, allow_unicode=False) -> str:
 
 class SignupInput(Vertical):
     DEFAULT_CSS = """
-    
+
     SignupInput {
         width: 100%;
         height: auto;

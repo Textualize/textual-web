@@ -23,6 +23,7 @@ log = logging.getLogger("textual-web")
 if not WINDOWS:
     from .terminal_session import TerminalSession
 
+
 class SessionManager:
     """Manage sessions (Textual apps or terminals)."""
 
@@ -77,8 +78,12 @@ class SessionManager:
                 Number of sessions not yet closed.
             """
 
+            async def close_wait(session: Session) -> None:
+                await session.close()
+                await session.wait()
+
             _done, remaining = await asyncio.wait(
-                [asyncio.create_task(session.close()) for session in sessions],
+                [asyncio.create_task(close_wait(session)) for session in sessions],
                 timeout=timeout,
             )
             return len(remaining)
@@ -88,7 +93,11 @@ class SessionManager:
             log.warning("%s session(s) didn't close after %s seconds", timeout)
 
     async def new_session(
-        self, slug: str, session_id: SessionID, route_key: RouteKey, devtools:bool =False
+        self,
+        slug: str,
+        session_id: SessionID,
+        route_key: RouteKey,
+        devtools: bool = False,
     ) -> Session | None:
         """Create a new seession.
 
@@ -106,17 +115,28 @@ class SessionManager:
             return None
 
         session_process: Session
-        if app.terminal:           
+        if app.terminal:
             if WINDOWS:
-                log.warn("Sorry, textual-web does not currently support terminals on Windows")
+                log.warn(
+                    "Sorry, textual-web does not currently support terminals on Windows"
+                )
                 return None
-            else: 
-                session_process = TerminalSession(self.poller, session_id, app.command)
+            else:
+                session_process = TerminalSession(
+                    self.poller,
+                    session_id,
+                    app.command,
+                )
         else:
-            session_process = AppSession(self.path, app.command, session_id)
+            session_process = AppSession(
+                self.path,
+                app.command,
+                session_id,
+                devtools=devtools,
+            )
         self.sessions[session_id] = session_process
         self.routes[route_key] = session_id
-        
+
         await session_process.open()
 
         return session_process

@@ -13,8 +13,16 @@ import msgpack
 
 from . import constants, packets
 from .environment import Environment
-from .packets import (PACKET_MAP, Handlers, NotifyTerminalSize, Packet,
-                      RoutePing, RoutePong, SessionClose, SessionData)
+from .packets import (
+    PACKET_MAP,
+    Handlers,
+    NotifyTerminalSize,
+    Packet,
+    RoutePing,
+    RoutePong,
+    SessionClose,
+    SessionData,
+)
 from .poller import Poller
 from .retry import Retry
 from .session import SessionConnector
@@ -65,7 +73,7 @@ class GanglionClient(Handlers):
         config: Config,
         environment: Environment,
         api_key: str | None,
-        devtools: bool = False
+        devtools: bool = False,
     ) -> None:
         self.environment = environment
         self.websocket_url = environment.url
@@ -104,7 +112,9 @@ class GanglionClient(Handlers):
             slug: Slug used in URL, or blank to auto-generate on server.
         """
         if WINDOWS:
-            log.warning("Sorry, textual-web does not currently support terminals on Windows")
+            log.warning(
+                "Sorry, textual-web does not currently support terminals on Windows"
+            )
         else:
             self.session_manager.add_app(name, command, slug=slug, terminal=True)
 
@@ -151,7 +161,7 @@ class GanglionClient(Handlers):
         finally:
             # Shut down the poller thread
             if not WINDOWS:
-                try:            
+                try:
                     self._poller.exit()
                 except Exception:
                     pass
@@ -169,16 +179,17 @@ class GanglionClient(Handlers):
     async def _run(self) -> None:
         loop = asyncio.get_event_loop()
         if WINDOWS:
+
             def exit_handler(signal_handler, stack_frame) -> None:
                 """Signal handler."""
                 self.on_keyboard_interrupt()
 
-            signal.signal(signal.SIGINT, exit_handler)            
+            signal.signal(signal.SIGINT, exit_handler)
         else:
-            loop.add_signal_handler(signal.SIGINT, self.on_keyboard_interrupt)        
+            loop.add_signal_handler(signal.SIGINT, self.on_keyboard_interrupt)
             self._poller.set_loop(loop)
             self._poller.start()
-        
+
         self._task = asyncio.create_task(self.connect())
         await self._task
 
@@ -325,11 +336,11 @@ class GanglionClient(Handlers):
             packet.application_slug,
             SessionID(packet.session_id),
             RouteKey(packet.route_key),
-            devtools=self._devtools
+            devtools=self._devtools,
         )
         if session_process is None:
             log.debug("Failed to create session")
-            return        
+            return
 
         connector = _ClientConnector(
             self, cast(SessionID, packet.session_id), cast(RouteKey, route_key)

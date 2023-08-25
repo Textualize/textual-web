@@ -48,7 +48,11 @@ class Session(ABC):
 
     @abstractmethod
     async def close(self) -> None:
-        """Close the session"""
+        """Close the session."""
+
+    @abstractmethod
+    async def wait(self) -> None:
+        """Wait for session to end."""
 
     @abstractmethod
     async def set_terminal_size(self, width: int, height: int) -> None:

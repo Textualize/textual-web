@@ -46,7 +46,7 @@ class TerminalSession(Session):
     async def open(self, argv=None) -> None:
         pid, master_fd = pty.fork()
         self.pid = pid
-        self.master_fd = master_fd        
+        self.master_fd = master_fd
         if pid == pty.CHILD:
             if argv is None:
                 argv = [self.command]
@@ -102,5 +102,7 @@ class TerminalSession(Session):
     async def close(self) -> None:
         if self.pid is not None:
             os.kill(self.pid, signal.SIGHUP)
+
+    async def wait(self) -> None:
         if self._task is not None:
             await self._task

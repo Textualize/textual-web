@@ -46,7 +46,7 @@ class AppSession(Session):
         working_directory: Path,
         command: str,
         session_id: SessionID,
-        devtools: bool = False
+        devtools: bool = False,
     ) -> None:
         self.working_directory = working_directory
         self.command = command
@@ -134,16 +134,17 @@ class AppSession(Session):
         environment["TEXTUAL_FPS"] = "60"
         if self.devtools:
             environment["TEXTUAL"] = "debug,devtools"
-        
+        environment["TEXTUAL_LOG"] = "textual.log"
+
         cwd = os.getcwd()
-        os.chdir(str(self.working_directory))        
+        os.chdir(str(self.working_directory))
         try:
             self._process = await asyncio.create_subprocess_shell(
                 self.command,
                 stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-                env=environment             
+                env=environment,
             )
         finally:
             os.chdir(cwd)
@@ -151,7 +152,7 @@ class AppSession(Session):
         self.start_time = monotonic()
 
     async def start(self, connector: SessionConnector) -> asyncio.Task:
-        """Start a task to run the process."""        
+        """Start a task to run the process."""
         self._connector = connector
         assert self._task is None
         self._task = asyncio.create_task(self.run())
@@ -160,18 +161,13 @@ class AppSession(Session):
     async def close(self) -> None:
         """Close the process."""
         self.state = ProcessState.CLOSING
-        log.info("sending meta")
-        await self.send_meta({"type": "quit"})        
-        
-        log.info("done close")
+        await self.send_meta({"type": "quit"})
 
     async def wait(self) -> None:
         """Wait for the process to finish (call close first)."""
-        log.info("waiting for close")
         if self._task:
-            log.info("awaiting task")
             await self._task
-        log.info("%s awaited", self) 
+            self._task = None
 
     async def set_terminal_size(self, width: int, height: int) -> None:
         """Set the terminal size for the process.
@@ -180,7 +176,13 @@ class AppSession(Session):
             width: Width in cells.
             height: Height in cells.
         """
-        await self.send_meta({"type": "resize", "width": width, "height": height})
+        await self.send_meta(
+            {
+                "type": "resize",
+                "width": width,
+                "height": height,
+            }
+        )
 
     async def run(self) -> None:
         """This loop reads the processes standard output, and relays it to the websocket."""
@@ -209,10 +211,10 @@ class AppSession(Session):
 
         on_data = self._connector.on_data
         on_meta = self._connector.on_meta
-        try:     
-            ready = False       
+        try:
+            ready = False
             for _ in range(10):
-                line = await(self.stdout.readline())                       
+                line = await self.stdout.readline()
                 if not line:
                     break
                 if line == b"__GANGLION__\n":
@@ -220,22 +222,15 @@ class AppSession(Session):
                     break
 
             if ready:
-                while True:            
-                    type_bytes = await readexactly(1)    
-                    if type_bytes not in (DATA, META):
-                        log.info("unexpected first bytes: %s", type_bytes)
-                        c = await readexactly(1)            
-                        if c == b"\n":
-                            break
-                    size_bytes = await readexactly(4)                
-                    size = from_bytes(size_bytes, "big")                    
+                while True:
+                    type_bytes = await readexactly(1)
+                    size_bytes = await readexactly(4)
+                    size = from_bytes(size_bytes, "big")
                     data = await readexactly(size)
                     if type_bytes == DATA:
                         await on_data(data)
                     elif type_bytes == META:
-                        log.info(data.decode("utf-8"))
                         await on_meta(json.loads(data))
-                        
 
         except IncompleteReadError:
             # Incomplete read means that the stream was closed
@@ -251,7 +246,6 @@ class AppSession(Session):
 
         stderr_message = stderr_data.getvalue().decode("utf-8", errors="replace")
         if self._process is not None and self._process.returncode != 0:
-            log.info("%s returned error code=%s", self, self._process.returncode)
             if constants.DEBUG and stderr_message:
                 log.warning(stderr_message)
 
@@ -293,13 +287,9 @@ class AppSession(Session):
         Returns:
             True if the data was sent, otherwise False.
         """
-        log.info("meta %s", data)
+        log.info(f"meta {data}")
         stdin = self.stdin
-        log.info("1")
         data_bytes = json.dumps(data).encode("utf-8")
-        log.info("2")
         stdin.write(self.encode_packet(b"M", data_bytes))
-        log.info("3")
         await stdin.drain()
-        log.info("4")
         return True

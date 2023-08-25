@@ -7,6 +7,7 @@ import os
 import selectors
 from threading import Thread, Event
 
+
 @dataclass
 class Write:
     """Data in a write queue."""
@@ -16,13 +17,12 @@ class Write:
     done_event: asyncio.Event = field(default_factory=asyncio.Event)
 
 
-
 class Poller(Thread):
     """A thread which reads from file descriptors and posts read data to a queue."""
 
     def __init__(self) -> None:
         super().__init__()
-        self._loop: asyncio.AbstractEventLoop | None = None        
+        self._loop: asyncio.AbstractEventLoop | None = None
         self._selector = selectors.DefaultSelector()
         self._read_queues: dict[int, asyncio.Queue[bytes | None]] = {}
         self._write_queues: dict[int, deque[Write]] = {}
@@ -36,7 +36,7 @@ class Poller(Thread):
 
         Returns:
             Async queue.
-        """        
+        """
         self._selector.register(
             file_descriptor, selectors.EVENT_READ | selectors.EVENT_WRITE
         )
@@ -60,10 +60,12 @@ class Poller(Thread):
             data: Data to write.
         """
         if file_descriptor not in self._write_queues:
-            self._write_queues[file_descriptor] = deque()            
+            self._write_queues[file_descriptor] = deque()
         new_write = Write(data)
-        self._write_queues[file_descriptor].append(new_write)        
-        self._selector.modify(file_descriptor, selectors.EVENT_READ | selectors.EVENT_WRITE)
+        self._write_queues[file_descriptor].append(new_write)
+        self._selector.modify(
+            file_descriptor, selectors.EVENT_READ | selectors.EVENT_WRITE
+        )
         await new_write.done_event.wait()
 
     def set_loop(self, loop: asyncio.AbstractEventLoop) -> None:
@@ -76,10 +78,9 @@ class Poller(Thread):
 
     def run(self) -> None:
         """Run the Poller thread."""
-        
+
         readable_events = selectors.EVENT_READ
         writeable_events = selectors.EVENT_WRITE
-
 
         loop = self._loop
         selector = self._selector
@@ -87,7 +88,7 @@ class Poller(Thread):
         while not self._exit_event.is_set():
             events = selector.select(1)
 
-            for selector_key, event_mask in events:                
+            for selector_key, event_mask in events:
                 file_descriptor = selector_key.fileobj
                 assert isinstance(file_descriptor, int)
 
@@ -97,7 +98,7 @@ class Poller(Thread):
                         try:
                             data = os.read(file_descriptor, 1024 * 32) or None
                         except Exception:
-                            pass
+                            loop.call_soon_threadsafe(queue.put_nowait, None)
                         else:
                             loop.call_soon_threadsafe(queue.put_nowait, data)
 

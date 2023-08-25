@@ -287,7 +287,6 @@ class AppSession(Session):
         Returns:
             True if the data was sent, otherwise False.
         """
-        log.info(f"meta {data}")
         stdin = self.stdin
         data_bytes = json.dumps(data).encode("utf-8")
         stdin.write(self.encode_packet(b"M", data_bytes))

@@ -230,7 +230,11 @@ class AppSession(Session):
                     if type_bytes == DATA:
                         await on_data(data)
                     elif type_bytes == META:
-                        await on_meta(json.loads(data))
+                        meta_data = json.loads(data)
+                        if meta_data.get("type") == "exit":
+                            await self.send_meta({"type": "exit"})
+                        else:
+                            await on_meta(json.loads(data))
 
         except IncompleteReadError:
             # Incomplete read means that the stream was closed

@@ -87,7 +87,7 @@ Use the `--config` switch to load the new configuration:
 textual-web --config serve.toml
 ```
 
-You should now get 3 links, one for each of the secions in the configuration:
+You should now get 3 links, one for each of the sections in the configuration:
 
 
 <img width="1145" alt="Screenshot 2023-08-22 at 10 37 59" src="https://github.com/Textualize/textual-web/assets/554369/81b966de-e95a-4672-83b9-b95c2029b942">
@@ -98,7 +98,7 @@ Click any of the links to serve the respective app:
 
 <img width="1131" alt="Screenshot 2023-08-22 at 10 42 25" src="https://github.com/Textualize/textual-web/assets/554369/d25f3061-bc98-48b9-b4d0-1bab61d401b1">
 
-### Terminal configutation
+### Terminal configuration
 
 You can also add a terminal(s) to the configuration file, in a similar way.
 

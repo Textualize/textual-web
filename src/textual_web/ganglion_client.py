@@ -293,6 +293,14 @@ class GanglionClient(Handlers):
             app.model_dump(include={"name", "slug", "color", "terminal"})
             for app in self.config.apps
         ]
+        if WINDOWS:
+            filter_apps = [app for app in apps if not app["terminal"]]
+            if filter_apps != apps:
+                log.warn(
+                    "Sorry, textual-web does not currently support terminals on Windows"
+                )
+            apps = filter_apps
+
         await self.send(packets.DeclareApps(apps))
 
     async def send(self, packet: Packet) -> bool:

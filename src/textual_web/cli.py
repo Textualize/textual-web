@@ -158,7 +158,9 @@ def app(
 
     if terminal:
         ganglion_client.add_terminal(
-            "Terminal", os.environ.get("SHELL", "bin/sh"), identity.generate().lower()
+            "Terminal",
+            os.environ.get("SHELL", "bin/sh"),
+            identity.generate().lower(),
         )
 
     if not ganglion_client.app_count:

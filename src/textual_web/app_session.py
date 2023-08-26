@@ -132,9 +132,11 @@ class AppSession(Session):
         environment["TEXTUAL_DRIVER"] = "textual.drivers.web_driver:WebDriver"
         environment["TEXTUAL_FILTERS"] = "dim"
         environment["TEXTUAL_FPS"] = "60"
+        environment["TERM"] = "xterm-256color"
+        environment["COLORTERM"] = "truecolor"
         if self.devtools:
             environment["TEXTUAL"] = "debug,devtools"
-        environment["TEXTUAL_LOG"] = "textual.log"
+            environment["TEXTUAL_LOG"] = "textual.log"
 
         cwd = os.getcwd()
         os.chdir(str(self.working_directory))

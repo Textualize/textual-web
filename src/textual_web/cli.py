@@ -120,7 +120,10 @@ def app(
 
     print_disclaimer()
     log.info(f"version='{VERSION}'")
-    log.info(f"environment={_environment!r}")
+    if constants.DEBUG:
+        log.info(f"environment={_environment!r}")
+    else:
+        log.info(f"environment={_environment.name!r}")
 
     if constants.DEBUG:
         log.warning("DEBUG env var is set; logs may be verbose!")

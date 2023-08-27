@@ -218,7 +218,10 @@ class GanglionClient(Handlers):
                     log.info("connecting to Ganglion")
                 async with aiohttp.ClientSession() as session:
                     async with session.ws_connect(
-                        self.websocket_url, headers=headers
+                        self.websocket_url,
+                        headers=headers,
+                        heartbeat=15,  # Sends a regular ping
+                        compress=12,  # Enables websocket compression
                     ) as websocket:
                         self._websocket = websocket
                         retry.success()

@@ -1,12 +1,12 @@
 # textual-web
 
-Textual Web is an application to publish [Textual](https://github.com/Textualize/textual) apps and terminals on the web.
+Textual Web publishes [Textual](https://github.com/Textualize/textual) apps and terminals on the web.
 
 Currently in a **prototype** stage (pre-beta), but available for testing.
 
 ## Getting Started
 
-Textual Web is a Python application. But you don't need to be a Python developer to run it.
+Textual Web is a Python application, but you don't need to be a Python developer to run it.
 
 The easiest way to install Textual Web it is via [pipx](https://pypa.github.io/pipx/).
 Once you have pipx installed, run the following command:
@@ -59,7 +59,7 @@ This will generate another URL, which will present you with your terminal in you
 
 
 When you serve a terminal in this way it will generate a random public URL.
-Don't share this with anyone you wouldn't trust to have access to your terminal.
+Don't share this with anyone you wouldn't trust to have access to your machine.
 
 ## Configuration
 
@@ -67,7 +67,7 @@ Textual Web can serve multiple [Textual](https://github.com/Textualize/textual) 
 Do do this, we need to create a TOML file.
 
 To demonstrate this, install Textual and check out the repository.
-Navigate to the examples directory and add the following file:
+Navigate to the `textual/examples` directory and add the following file:
 
 ```toml
 [app.Calculator]
@@ -100,15 +100,21 @@ Click any of the links to serve the respective app:
 
 ### Terminal configuration
 
+> [!NOTE]
+> Terminals currently work on macOS and Linux only. Windows support is planned for a future update.
+
 You can also add a terminal(s) to the configuration file, in a similar way.
 
 ```toml
 [terminal.Terminal]
 ```
 
+This will launch a terminal with your current shell.
+You can also add a `command` value to run a command other than your shell.
+
 ## Accounts
 
-In previous examples, the URLS have all contained a random string of digits which will change from run to run.
+In previous examples, the URLS  all contained a random string of digits which will change from run to run.
 If you want to create a permanent URL you will need to create an account.
 
 To create an account, run the following command:

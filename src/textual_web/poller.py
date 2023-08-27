@@ -49,6 +49,7 @@ class Poller(Thread):
         Args:
             file_descriptor: File descriptor.
         """
+        self._selector.unregister(file_descriptor)
         self._read_queues.pop(file_descriptor, None)
         self._write_queues.pop(file_descriptor, None)
 

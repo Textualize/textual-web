@@ -1,7 +1,7 @@
 """
 This file is auto-generated from packets.yml and packets.py.template
 
-Time: Thu Jul 27 15:47:42 2023
+Time: Sun Aug 27 07:38:29 2023
 Version: 1
 
 To regenerate run `make packets.py` (in src directory)
@@ -328,6 +328,8 @@ class SessionOpen(Packet):
         app_id (str): Application identity.
         application_slug (str): Application slug.
         route_key (str): Route key
+        width (int): Terminal width.
+        height (int): Terminal height.
 
     """
 
@@ -343,21 +345,43 @@ class SessionOpen(Packet):
         ("app_id", str),
         ("application_slug", str),
         ("route_key", str),
+        ("width", int),
+        ("height", int),
     ]
-    _attribute_count = 4
+    _attribute_count = 6
     _get_handler = attrgetter("on_session_open")
 
     def __new__(
-        cls, session_id: str, app_id: str, application_slug: str, route_key: str
+        cls,
+        session_id: str,
+        app_id: str,
+        application_slug: str,
+        route_key: str,
+        width: int,
+        height: int,
     ) -> "SessionOpen":
         return tuple.__new__(
             cls,
-            (PacketType.SESSION_OPEN, session_id, app_id, application_slug, route_key),
+            (
+                PacketType.SESSION_OPEN,
+                session_id,
+                app_id,
+                application_slug,
+                route_key,
+                width,
+                height,
+            ),
         )
 
     @classmethod
     def build(
-        cls, session_id: str, app_id: str, application_slug: str, route_key: str
+        cls,
+        session_id: str,
+        app_id: str,
+        application_slug: str,
+        route_key: str,
+        width: int,
+        height: int,
     ) -> "SessionOpen":
         """Build and validate a packet from its attributes."""
         if not isinstance(session_id, str):
@@ -376,20 +400,38 @@ class SessionOpen(Packet):
             raise TypeError(
                 f'packets.SessionOpen Type of "route_key" incorrect; expected str, found {type(route_key)}'
             )
+        if not isinstance(width, int):
+            raise TypeError(
+                f'packets.SessionOpen Type of "width" incorrect; expected int, found {type(width)}'
+            )
+        if not isinstance(height, int):
+            raise TypeError(
+                f'packets.SessionOpen Type of "height" incorrect; expected int, found {type(height)}'
+            )
         return tuple.__new__(
             cls,
-            (PacketType.SESSION_OPEN, session_id, app_id, application_slug, route_key),
+            (
+                PacketType.SESSION_OPEN,
+                session_id,
+                app_id,
+                application_slug,
+                route_key,
+                width,
+                height,
+            ),
         )
 
     def __repr__(self) -> str:
-        _type, session_id, app_id, application_slug, route_key = self
-        return f"SessionOpen({abbreviate_repr(session_id)}, {abbreviate_repr(app_id)}, {abbreviate_repr(application_slug)}, {abbreviate_repr(route_key)})"
+        _type, session_id, app_id, application_slug, route_key, width, height = self
+        return f"SessionOpen({abbreviate_repr(session_id)}, {abbreviate_repr(app_id)}, {abbreviate_repr(application_slug)}, {abbreviate_repr(route_key)}, {abbreviate_repr(width)}, {abbreviate_repr(height)})"
 
     def __rich_repr__(self) -> rich.repr.Result:
         yield "session_id", self.session_id
         yield "app_id", self.app_id
         yield "application_slug", self.application_slug
         yield "route_key", self.route_key
+        yield "width", self.width
+        yield "height", self.height
 
     @property
     def session_id(self) -> str:
@@ -410,6 +452,16 @@ class SessionOpen(Packet):
     def route_key(self) -> str:
         """Route key"""
         return self[4]
+
+    @property
+    def width(self) -> int:
+        """Terminal width."""
+        return self[5]
+
+    @property
+    def height(self) -> int:
+        """Terminal height."""
+        return self[6]
 
 
 # PacketType.SESSION_CLOSE (7)

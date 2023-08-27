@@ -345,6 +345,7 @@ class GanglionClient(Handlers):
             SessionID(packet.session_id),
             RouteKey(packet.route_key),
             devtools=self._devtools,
+            size=(packet.width, packet.height),
         )
         if session_process is None:
             log.debug("Failed to create session")

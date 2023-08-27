@@ -43,17 +43,17 @@ class TerminalSession(Session):
         yield "session_id", self.session_id
         yield "command", self.command
 
-    async def open(self, argv=None) -> None:
+    async def open(self, width: int = 80, height: int = 24) -> None:
         pid, master_fd = pty.fork()
         self.pid = pid
         self.master_fd = master_fd
         if pid == pty.CHILD:
-            if argv is None:
-                argv = [self.command]
+            argv = [self.command]
             try:
                 os.execlp(argv[0], *argv)  ## Exits the app
             except Exception:
                 os._exit(0)
+        self._set_terminal_size(width, height)
 
     def _set_terminal_size(self, width: int, height: int) -> None:
         buf = array.array("h", [height, width, 0, 0])
@@ -76,7 +76,6 @@ class TerminalSession(Session):
         on_data = self._connector.on_data
         on_close = self._connector.on_close
         try:
-            self._set_terminal_size(80, 24)
             while True:
                 data = await queue.get() or None
                 if data is None:

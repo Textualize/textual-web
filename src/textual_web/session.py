@@ -33,7 +33,7 @@ class Session(ABC):
         self._connector = SessionConnector()
 
     @abstractmethod
-    async def open(self) -> None:
+    async def open(self, width: int = 80, height: int = 24) -> None:
         """Open the session."""
         ...
 

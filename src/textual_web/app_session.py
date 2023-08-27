@@ -126,13 +126,15 @@ class AppSession(Session):
         if self._process is not None:
             yield "returncode", self._process.returncode, None
 
-    async def open(self) -> None:
+    async def open(self, width: int = 80, height: int = 24) -> None:
         """Open the process."""
         environment = dict(os.environ.copy())
         environment["TEXTUAL_DRIVER"] = "textual.drivers.web_driver:WebDriver"
         environment["TEXTUAL_FILTERS"] = "dim"
         environment["TEXTUAL_FPS"] = "60"
         environment["TEXTUAL_COLOR_SYSTEM"] = "truecolor"
+        environment["COLUMNS"] = str(width)
+        environment["ROWS"] = str(height)
         if self.devtools:
             environment["TEXTUAL"] = "debug,devtools"
             environment["TEXTUAL_LOG"] = "textual.log"
@@ -149,6 +151,7 @@ class AppSession(Session):
             )
         finally:
             os.chdir(cwd)
+        await self.set_terminal_size(width, height)
         log.debug("opened %r; %r", self.command, self._process)
         self.start_time = monotonic()
 
@@ -221,7 +224,6 @@ class AppSession(Session):
                 if line == b"__GANGLION__\n":
                     ready = True
                     break
-
             if ready:
                 while True:
                     type_bytes = await readexactly(1)

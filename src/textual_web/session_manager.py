@@ -98,6 +98,7 @@ class SessionManager:
         session_id: SessionID,
         route_key: RouteKey,
         devtools: bool = False,
+        size: tuple[int, int] = (80, 24),
     ) -> Session | None:
         """Create a new seession.
 
@@ -137,7 +138,7 @@ class SessionManager:
         self.sessions[session_id] = session_process
         self.routes[route_key] = session_id
 
-        await session_process.open()
+        await session_process.open(*size)
 
         return session_process
 

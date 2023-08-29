@@ -78,7 +78,8 @@ class GanglionClient(Handlers):
         self.environment = environment
         self.websocket_url = environment.url
 
-        path = Path(config_path).absolute().parent
+        abs_path = Path(config_path).absolute()
+        path = abs_path if abs_path.is_dir() else abs_path.parent
         self.config = config
         self.api_key = api_key
         self._devtools = devtools

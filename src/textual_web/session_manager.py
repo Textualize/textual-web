@@ -6,9 +6,10 @@ from pathlib import Path
 import platform
 
 from . import config
+from .identity import generate
 
-from .session import Session
 from .app_session import AppSession
+from .session import Session
 
 from .poller import Poller
 from .types import SessionID, RouteKey
@@ -45,6 +46,7 @@ class SessionManager:
             command: Command to run the app.
             slug: Slug used in URL, or blank to auto-generate on server.
         """
+        slug = slug or generate().lower()
         new_app = config.App(
             name=name, slug=slug, path="./", command=command, terminal=terminal
         )

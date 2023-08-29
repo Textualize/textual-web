@@ -13,6 +13,7 @@ import msgpack
 
 from . import constants, packets
 from .environment import Environment
+from .identity import generate
 from .packets import (
     PACKET_MAP,
     Handlers,
@@ -101,6 +102,7 @@ class GanglionClient(Handlers):
             command: Command to run the app.
             slug: Slug used in URL, or blank to auto-generate on server.
         """
+        slug = slug or generate().lower()
         self.session_manager.add_app(name, command, slug=slug)
 
     def add_terminal(self, name: str, command: str, slug: str = "") -> None:
@@ -116,6 +118,7 @@ class GanglionClient(Handlers):
                 "Sorry, textual-web does not currently support terminals on Windows"
             )
         else:
+            slug = slug or generate().lower()
             self.session_manager.add_app(name, command, slug=slug, terminal=True)
 
     @classmethod

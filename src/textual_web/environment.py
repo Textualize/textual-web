@@ -8,15 +8,19 @@ class Environment:
     """Data structure to describe the environment (dev, prod, local)."""
 
     name: str
+    """Name of the environment, used in switch."""
     api_url: str
+    """Endpoint for API."""
     url: str
+    """Websocket endpoint for client."""
 
 
 ENVIRONMENTS = {
-    # "prod": Environment(
-    #     name="prod",
-    #     url="wss://textualize.io/app-service/",
-    # ),
+    "prod": Environment(
+        name="prod",
+        api_url="https://textual-web.io/api/",
+        url="wss://textual-web/app-service/",
+    ),
     "local": Environment(
         name="local",
         api_url="ws://127.0.0.1:8080/api/",

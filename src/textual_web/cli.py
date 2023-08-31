@@ -71,6 +71,7 @@ def print_disclaimer() -> None:
     default=constants.ENVIRONMENT,
 )
 @click.option("-a", "--api-key", help="API key", default=constants.API_KEY)
+@click.option("-r", "--run", help="Command to run a Textual app", multiple=True, metavar="COMMAND")
 @click.option(
     "--devtools", is_flag=True, help="Enable devtools in Textual apps", default=False
 )
@@ -82,6 +83,7 @@ def print_disclaimer() -> None:
 def app(
     config: str | None,
     environment: str,
+    run: list[str],
     devtools: bool,
     terminal: bool,
     api_key: str,
@@ -159,11 +161,14 @@ def app(
         devtools=devtools,
     )
 
+    for app_command in run:
+        ganglion_client.add_app("", app_command, "")
+
     if terminal:
         ganglion_client.add_terminal(
             "Terminal",
             os.environ.get("SHELL", "bin/sh"),
-            identity.generate().lower(),
+            "",
         )
 
     if not ganglion_client.app_count:

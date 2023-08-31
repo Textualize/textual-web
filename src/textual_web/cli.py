@@ -62,33 +62,41 @@ def print_disclaimer() -> None:
 
 @click.command()
 @click.version_option(version("textual-web"))
-@click.option("-c", "--config", help="Location of config file", metavar="PATH")
+@click.option("-c", "--config", help="Location of TOML config file.", metavar="PATH")
 @click.option(
     "-e",
     "--environment",
-    help="Environment (prod, dev, or local)",
+    help="Environment switch.",
     type=click.Choice(list(ENVIRONMENTS)),
     default=constants.ENVIRONMENT,
 )
 @click.option("-a", "--api-key", help="API key", default=constants.API_KEY)
-@click.option("-r", "--run", help="Command to run a Textual app", multiple=True, metavar="COMMAND")
 @click.option(
-    "--devtools", is_flag=True, help="Enable devtools in Textual apps", default=False
+    "-r",
+    "--run",
+    help="Command to run a Textual app.",
+    multiple=True,
+    metavar="COMMAND",
 )
 @click.option(
-    "-t", "--terminal", is_flag=True, help="Publish a remote terminal on a random URL"
+    "--dev", is_flag=True, help="Enable devtools in Textual apps.", default=False
 )
-@click.option("-s", "--signup", is_flag=True, help="Create a textual-web account")
-@click.option("--welcome", is_flag=True, help="Launch an example app")
+@click.option(
+    "-t", "--terminal", is_flag=True, help="Publish a remote terminal on a random URL."
+)
+@click.option("-s", "--signup", is_flag=True, help="Create a textual-web account.")
+@click.option("--welcome", is_flag=True, help="Launch an example app.")
+@click.option("--merlin", is_flag=True, help="Launch Merlin game.")
 def app(
     config: str | None,
     environment: str,
     run: list[str],
-    devtools: bool,
+    dev: bool,
     terminal: bool,
     api_key: str,
     signup: bool,
     welcome: bool,
+    merlin: bool,
 ) -> None:
     """Main entry point for the CLI.
 
@@ -98,6 +106,9 @@ def app(
         devtools: Enable devtools.
         terminal: Enable a terminal.
         api_key: API key.
+        signup: Signup dialog.
+        welcome: Welcome app.
+        merlin: Merlin app.
     """
 
     error_console = Console(stderr=True)
@@ -116,6 +127,12 @@ def app(
         from .apps.welcome import WelcomeApp
 
         WelcomeApp().run()
+        return
+
+    if merlin:
+        from .apps.merlin import MerlinApp
+
+        MerlinApp().run()
         return
 
     VERSION = version("textual-web")
@@ -150,7 +167,7 @@ def app(
 
         print(_config)
 
-    if devtools:
+    if dev:
         log.info("Devtools enabled in Textual apps (run textual console)")
 
     ganglion_client = GanglionClient(
@@ -158,11 +175,11 @@ def app(
         _config,
         _environment,
         api_key=api_key or None,
-        devtools=devtools,
+        devtools=dev,
     )
 
     for app_command in run:
-        ganglion_client.add_app("", app_command, "")
+        ganglion_client.add_app(app_command, app_command, "")
 
     if terminal:
         ganglion_client.add_terminal(
@@ -173,6 +190,7 @@ def app(
 
     if not ganglion_client.app_count:
         ganglion_client.add_app("Welcome", "textual-web --welcome", "welcome")
+        ganglion_client.add_app("Merlin Tribute", "textual-web --merlin", "merlin")
 
     if WINDOWS:
         asyncio.run(ganglion_client.run())

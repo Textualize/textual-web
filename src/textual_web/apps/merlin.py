@@ -72,8 +72,8 @@ class MerlinApp(App):
         align: center middle;   
     }
 
-    Screen.-win {        
-        background: transparent;        
+    Screen.-win {
+        background: transparent;
     }
     
     Grid {

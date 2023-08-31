@@ -47,7 +47,11 @@ class LabelSwitch(Widget):
         text-align: center;
         width: 1fr;       
         text-style: bold; 
-        color: $text-muted;
+        color: $success 50%;
+    }
+
+    LabelSwitch Label#label-5 {
+        color: $text-disabled;
     }
     """
 
@@ -56,7 +60,7 @@ class LabelSwitch(Widget):
         super().__init__()
 
     def compose(self) -> ComposeResult:
-        yield Label(str(self.switch_no))
+        yield Label(str(self.switch_no), id=f"label-{self.switch_no}")
         yield Switch(id=f"switch-{self.switch_no}", name=str(self.switch_no))
 
 

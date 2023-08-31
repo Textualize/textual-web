@@ -19,7 +19,7 @@ ENVIRONMENTS = {
     "prod": Environment(
         name="prod",
         api_url="https://textual-web.io/api/",
-        url="wss://textual-web/app-service/",
+        url="wss://textual-web.io/app-service/",
     ),
     "local": Environment(
         name="local",

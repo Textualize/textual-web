@@ -40,12 +40,18 @@ TOGGLES: dict[int, tuple[int, ...]] = {
 
 
 class LabelSwitch(Widget):
+    """Switch with a numeric label."""
+
     DEFAULT_CSS = """
     LabelSwitch Label {
         text-align: center;
         width: 1fr;       
         text-style: bold; 
-        color: $text-muted;
+        color: $success 50%;
+    }
+
+    LabelSwitch Label#label-5 {
+        color: $text-disabled;
     }
     """
 
@@ -54,20 +60,20 @@ class LabelSwitch(Widget):
         super().__init__()
 
     def compose(self) -> ComposeResult:
-        yield Label(str(self.switch_no))
+        yield Label(str(self.switch_no), id=f"label-{self.switch_no}")
         yield Switch(id=f"switch-{self.switch_no}", name=str(self.switch_no))
 
 
 class MerlinApp(App):
-    CSS = """
+    """A simple reproduction of one game on the Merlin hand held console."""
 
+    CSS = """
     Screen {
-        align: center middle;
-        background: transparent;
+        align: center middle;   
     }
 
     Screen.-win {
-        background: $success;
+        background: transparent;
     }
     
     Grid {
@@ -81,7 +87,6 @@ class MerlinApp(App):
         grid-gutter: 1 1;
         background: $surface;
     }
-
     """
 
     def render(self) -> LinearGradient:
@@ -93,13 +98,15 @@ class MerlinApp(App):
             for switch in (7, 8, 9, 4, 5, 6, 1, 2, 3):
                 yield LabelSwitch(switch)
 
-    def on_mount(self) -> ComposeResult:
+    def on_mount(self) -> None:
         for switch_no in range(1, 10):
             if random.randint(0, 1):
-                self.query_one(f"#switch-{switch_no}").toggle()
+                self.query_one(f"#switch-{switch_no}", Switch).toggle()
 
     def check_win(self) -> bool:
-        on_switches = {switch.name for switch in self.query(Switch) if switch.value}
+        on_switches = {
+            int(switch.name or "0") for switch in self.query(Switch) if switch.value
+        }
         return on_switches == {1, 2, 3, 4, 6, 7, 8, 9}
 
     def on_switch_changed(self, event: Switch.Changed) -> None:

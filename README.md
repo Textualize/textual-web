@@ -93,7 +93,7 @@ Click any of the links to serve the respective app:
 
 ### Terminal configutation
 
-You can also add a terminal to the configuration file, in a similar way.
+You can also add terminals to the configuration file, in a similar way.
 
 ```toml
 [terminal.Terminal]

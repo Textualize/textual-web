@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 from pathlib import Path
 import re
@@ -87,6 +89,13 @@ class Form(Container):
     Form Input {
         border: tall transparent;
     }
+
+    Form Label.info {
+        text-align: left;
+        padding: 0 1 0 1;
+        color: $warning 70%;
+    }
+    
     """
 
 
@@ -185,6 +194,12 @@ class ErrorLabel(Label):
 
 
 class SignupScreen(Screen):
+    @property
+    def app(self) -> SignUpApp:
+        app = super().app
+        assert isinstance(app, SignUpApp)
+        return app
+
     def compose(self) -> ComposeResult:
         with Form():
             yield Label("Textual-web Signup", classes="title")
@@ -196,8 +211,10 @@ class SignupScreen(Screen):
 
             yield Label("Account slug*")
             with SignupInput(id="account_slug"):
-                yield Input(placeholder="Identifier used in URLs")
-                yield ErrorLabel()
+                with Vertical(classes="group"):
+                    yield Input(placeholder="Identifier used in URLs")
+                    yield Label("First come, first serve (pick wisely)", classes="info")
+                    yield ErrorLabel()
 
             yield Label("Email*")
             with SignupInput(id="email"):

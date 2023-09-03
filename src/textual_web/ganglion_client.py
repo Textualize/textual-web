@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Union, cast
 
 import aiohttp
 import msgpack
+from aiohttp.client_exceptions import WSServerHandshakeError
 
 from . import constants, packets
 from .environment import Environment
@@ -239,6 +240,9 @@ class GanglionClient(Handlers):
                     break
             except asyncio.CancelledError:
                 raise
+            except WSServerHandshakeError:
+                if retry_count == 1:
+                    log.warning("Received forbidden response, check your API Key")
             except Exception as error:
                 if retry_count == 1:
                     log.warning(

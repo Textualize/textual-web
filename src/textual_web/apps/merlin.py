@@ -50,7 +50,7 @@ class LabelSwitch(Widget):
         text-align: center;
         width: 1fr;       
         text-style: bold; 
-        color: $success 50%;
+        
     }
 
     LabelSwitch Label#label-5 {

@@ -281,7 +281,10 @@ class AppSession(Session):
             True if the data was sent, otherwise False.
         """
         stdin = self.stdin
-        stdin.write(self.encode_packet(b"D", data))
+        try:
+            stdin.write(self.encode_packet(b"D", data))
+        except RuntimeError:
+            return False
         await stdin.drain()
         return True
 
@@ -296,6 +299,9 @@ class AppSession(Session):
         """
         stdin = self.stdin
         data_bytes = json.dumps(data).encode("utf-8")
-        stdin.write(self.encode_packet(b"M", data_bytes))
+        try:
+            stdin.write(self.encode_packet(b"M", data_bytes))
+        except RuntimeError:
+            return False
         await stdin.drain()
         return True

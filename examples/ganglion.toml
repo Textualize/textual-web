@@ -1,6 +1,5 @@
 [account]
 
-
 [app.Calculator]
 path = "./"
 command = "python calculator.py"

@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import random
 
+from datetime import timedelta
+from time import monotonic
 from textual.app import App, ComposeResult
 from textual import events
 from textual.color import Color
-from textual.containers import Grid
+from textual.containers import Center, Grid
 from textual.renderables.gradient import LinearGradient
 from textual.widget import Widget
-from textual.widgets import Label, Switch
+from textual.widgets import Label, Switch, Digits
+from textual.reactive import var
 
 COLORS = [
     "#881177",
@@ -64,6 +67,31 @@ class LabelSwitch(Widget):
         yield Switch(id=f"switch-{self.switch_no}", name=str(self.switch_no))
 
 
+class Timer(Digits):
+    DEFAULT_CSS = """
+
+    Timer {
+        text-align: center;
+        width: auto;
+        margin: 2 8;
+        color: $warning;
+    }
+    """
+    start_time = var(0)
+    running = var(True)
+
+    def on_mount(self) -> None:
+        self.start_time = monotonic()
+        self.set_interval(1, self.tick)
+        self.tick()
+
+    def tick(self) -> None:
+        if self.start_time == 0 or not self.running:
+            return
+        time_elapsed = timedelta(seconds=int(monotonic() - self.start_time))
+        self.update(str(time_elapsed))
+
+
 class MerlinApp(App):
     """A simple reproduction of one game on the Merlin hand held console."""
 
@@ -75,6 +103,11 @@ class MerlinApp(App):
     Screen.-win {
         background: transparent;
     }
+
+    Screen.-win Timer {
+        color: $success;
+    }
+    
     
     Grid {
         width: auto;
@@ -87,6 +120,8 @@ class MerlinApp(App):
         grid-gutter: 1 1;
         background: $surface;
     }
+
+
     """
 
     def render(self) -> LinearGradient:
@@ -94,6 +129,8 @@ class MerlinApp(App):
         return LinearGradient(30.0, stops)
 
     def compose(self) -> ComposeResult:
+        yield Timer()
+
         with Grid():
             for switch in (7, 8, 9, 4, 5, 6, 1, 2, 3):
                 yield LabelSwitch(switch)
@@ -116,6 +153,7 @@ class MerlinApp(App):
                 self.query_one(f"#switch-{toggle_no}", Switch).toggle()
         if self.check_win():
             self.query_one("Screen").add_class("-win")
+            self.query_one(Timer).running = False
 
     def on_key(self, event: events.Key) -> None:
         if event.character and event.character.isdigit():

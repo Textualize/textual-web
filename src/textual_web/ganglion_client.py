@@ -361,6 +361,7 @@ class GanglionClient(Handlers):
         connector = _ClientConnector(
             self, cast(SessionID, packet.session_id), cast(RouteKey, route_key)
         )
+
         await session_process.start(connector)
 
     async def on_session_close(self, packet: SessionClose) -> None:

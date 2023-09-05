@@ -2,7 +2,7 @@
 
 Textual Web publishes [Textual](https://github.com/Textualize/textual) apps and terminals on the web.
 
-Currently in a **prototype** stage (pre-beta), but available for testing.
+Currently in a beta phase &mdash; help us test!
 
 ## Getting Started
 
@@ -59,7 +59,10 @@ This will generate another URL, which will present you with your terminal in you
 
 
 When you serve a terminal in this way it will generate a random public URL.
-Don't share this with anyone you wouldn't trust to have access to your machine.
+
+> [!WARNING]
+> Don't share this with anyone you wouldn't trust to have access to your machine.
+
 
 ## Configuration
 
@@ -97,6 +100,17 @@ Click any of the links to serve the respective app:
 
 
 <img width="1131" alt="Screenshot 2023-08-22 at 10 42 25" src="https://github.com/Textualize/textual-web/assets/554369/d25f3061-bc98-48b9-b4d0-1bab61d401b1">
+
+### Slugs
+
+Textual Web will derive the slug (text in the URL) from the name of the app.
+You can also set it explicitly with the slug parameter.
+
+```toml
+[app.Calculator]
+command = "python calculator.py"
+slug = "calc"
+```
 
 ### Terminal configuration
 

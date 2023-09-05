@@ -47,7 +47,7 @@ def get_environ_int(name: str, default: int) -> int:
 DEBUG: Final = get_environ_bool("DEBUG")
 """Enable debug mode."""
 
-ENVIRONMENT: Final[str] = get_environ("GANGLION_ENVIRONMENT", "dev")
+ENVIRONMENT: Final[str] = get_environ("GANGLION_ENVIRONMENT", "prod")
 """Select alternative environment."""
 
 API_KEY: Final[str] = get_environ("GANGLION_API_KEY", "")

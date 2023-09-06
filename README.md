@@ -27,20 +27,20 @@ textual-web
 
 You should see something like the following:
 
-<img width="1002" alt="Screenshot 2023-08-22 at 09 41 08" src="https://github.com/Textualize/textual-web/assets/554369/2e84f6d1-ad40-46ac-9ac3-16f1040f6ce6">
+<img width="1002" alt="Screenshot 2023-09-06 at 10 11 07" src="https://github.com/Textualize/textual-web/assets/554369/b8c6b043-57c8-4781-addf-165696f3d404">
 
 
-Click the blue link to launch the example Textual app (you may need to hold cmd or ctrl on some terminals).
+Click the blue links to launch the example Textual apps (you may need to hold cmd or ctrl on some terminals).
 Or copy the link to your browser if your terminal doesn't support links.
 
 You should see something like this in your browser:
 
 <img width="1058" alt="Screenshot 2023-08-22 at 09 41 35" src="https://github.com/Textualize/textual-web/assets/554369/93f70177-7b3c-4840-8265-4d8ec96c5ebc">
 
+<img width="1188" alt="Screenshot 2023-09-06 at 10 10 01" src="https://github.com/Textualize/textual-web/assets/554369/eaed134a-5fcc-40f6-8252-55cf93c84d60">
 
-You are seeing a simple Textual application.
-This app is running on your machine, but is available via a public URL.
-You could send that to anyone with internet access, and they would see the same thing.
+These Textual apps are running on your machine, but have public URLs.
+You could send the URLs to anyone with internet access, and they would see the same thing.
 
 Hit ctrl+C in the terminal to stop serving the welcome application.
 
@@ -67,10 +67,9 @@ When you serve a terminal in this way it will generate a random public URL.
 ## Configuration
 
 Textual Web can serve multiple [Textual](https://github.com/Textualize/textual) apps and terminals (as many as you like).
-To do this, we need to create a TOML file.
 
-To demonstrate this, install Textual and check out the repository.
-Navigate to the `textual/examples` directory and add the following file:
+To demonstrate this, install [Textual](https://github.com/Textualize/textual) and check out the repository.
+Navigate to the `textual/examples` directory and add the following TOML file:
 
 ```toml
 [app.Calculator]
@@ -172,6 +171,15 @@ DEBUG=1 textual-web --config ganglion.toml
 
 Note this may generate a lot of output, and it may even slow your apps down.
 
+## Known problems
+
+You may encounter a glitch with apps that have a lot of colors.
+This is a bug in an upstream library, which we are expecting a fix for soon.
+
+The experience on mobile may vary.
+On iPhone Textual apps are quite usable, but other systems may have a few issues.
+We should be able to improve the mobile exprience in future updates.
+
 ## What's next?
 
 The goal of this project is to turn Textual apps into fully featured web applications.
@@ -183,7 +191,9 @@ This protocol will be used to expose web application features to the Textual app
 
 For example, a Textual app might generate a file (say a CSV with a server report). 
 If you run that in the terminal, the file would be saved in your working directory.
-But in a Textual app it would be served and saved in your downloads folder, like a regular web app.
+But in a Textual app it would be served and saved in your Downloads folder, like a regular web app.
+
+In the future, other web APIs can be exposed to Textual apps in a similar way.
 
 ## Help us test
 

@@ -124,7 +124,7 @@ You can also add terminals to the configuration file, in a similar way.
 
 This will launch a terminal with your current shell.
 You can also add a `command` value to run a command other than your shell.
-For instance, lets say we want to server the HTOP command.
+For instance, let's say we want to serve the `htop` command.
 We could add the following to the configuration:
 
 ```toml
@@ -134,7 +134,7 @@ command = "htop"
 
 ## Accounts
 
-In previous examples, the URLS  all contained a random string of digits which will change from run to run.
+In previous examples, the URLs  all contained a random string of digits which will change from run to run.
 If you want to create a permanent URL you will need to create an account.
 
 To create an account, run the following command:
@@ -196,7 +196,7 @@ In fact, if you serve a terminal and then launch a Textual app, it will work jus
 Under the hood, however, Textual apps are served using a custom protocol.
 This protocol will be used to expose web application features to the Textual app.
 
-For example, a Textual app might generate a file (say a CSV with a server report). 
+For example, a Textual app might generate a file (say a CSV with a server report).
 If you run that in the terminal, the file would be saved in your working directory.
 But in a Textual app it would be served and saved in your Downloads folder, like a regular web app.
 

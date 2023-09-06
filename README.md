@@ -68,7 +68,7 @@ When you serve a terminal in this way it will generate a random public URL.
 
 Textual Web can serve multiple [Textual](https://github.com/Textualize/textual) apps and terminals (as many as you like).
 
-To demonstrate this, install Textual and clone out the repository.
+To demonstrate this, [install Textual](https://textual.textualize.io/getting_started/) and clone the repository.
 Navigate to the `textual/examples` directory and add the following TOML file:
 
 ```toml

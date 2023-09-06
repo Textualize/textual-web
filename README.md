@@ -124,6 +124,13 @@ You can also add terminals to the configuration file, in a similar way.
 
 This will launch a terminal with your current shell.
 You can also add a `command` value to run a command other than your shell.
+For instance, lets say we want to server the HTOP command.
+We could add the following to the configuration:
+
+```toml
+[terminal.HTOP]
+command = "htop"
+```
 
 ## Accounts
 

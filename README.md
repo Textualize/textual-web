@@ -202,6 +202,11 @@ But in a Textual app it would be served and saved in your Downloads folder, like
 
 In the future, other web APIs can be exposed to Textual apps in a similar way.
 
+Also planned for the near future is *sessions*.
+Currently, if you close the browser tab it will also close the Textual app.
+In the future you will be able to close a tab and later resume where you left off.
+This will also allow us to upgrade servers without kicking anyone off.
+
 ## Help us test
 
 Currently testing is being coordinated via our [Discord server](https://discord.com/invite/Enf6Z3qhVr).

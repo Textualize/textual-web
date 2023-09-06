@@ -134,7 +134,7 @@ command = "htop"
 
 ## Accounts
 
-In previous examples, the URLS  all contained a random string of digits which will change from run to run.
+In previous examples, the URLs  all contained a random string of digits which will change from run to run.
 If you want to create a permanent URL you will need to create an account.
 
 To create an account, run the following command:

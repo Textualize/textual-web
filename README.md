@@ -75,9 +75,6 @@ Navigate to the `textual/examples` directory and add the following TOML file:
 [app.Calculator]
 command = "python calculator.py"
 
-[app."Code Browser"]
-command = "python code_browser.py"
-
 [app.Dictionary]
 command = "python dictionary.py"
 ```

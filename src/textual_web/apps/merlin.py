@@ -7,7 +7,7 @@ from time import monotonic
 from textual.app import App, ComposeResult
 from textual import events
 from textual.color import Color
-from textual.containers import Center, Grid
+from textual.containers import Grid
 from textual.renderables.gradient import LinearGradient
 from textual.widget import Widget
 from textual.widgets import Label, Switch, Digits

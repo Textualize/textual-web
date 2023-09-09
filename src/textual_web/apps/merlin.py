@@ -68,7 +68,6 @@ class LabelSwitch(Widget):
 
 class Timer(Digits):
     DEFAULT_CSS = """
-
     Timer {
         text-align: center;
         width: auto;

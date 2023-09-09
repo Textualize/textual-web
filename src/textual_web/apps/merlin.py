@@ -1,17 +1,17 @@
 from __future__ import annotations
 
 import random
-
 from datetime import timedelta
 from time import monotonic
-from textual.app import App, ComposeResult
+
 from textual import events
+from textual.app import App, ComposeResult
 from textual.color import Color
 from textual.containers import Grid
+from textual.reactive import var
 from textual.renderables.gradient import LinearGradient
 from textual.widget import Widget
-from textual.widgets import Label, Switch, Digits
-from textual.reactive import var
+from textual.widgets import Digits, Label, Switch
 
 COLORS = [
     "#881177",
@@ -49,8 +49,7 @@ class LabelSwitch(Widget):
     LabelSwitch Label {
         text-align: center;
         width: 1fr;       
-        text-style: bold; 
-        
+        text-style: bold;         
     }
 
     LabelSwitch Label#label-5 {
@@ -106,8 +105,7 @@ class MerlinApp(App):
 
     Screen.-win Timer {
         color: $success;
-    }
-    
+    }    
     
     Grid {
         width: auto;
@@ -120,8 +118,6 @@ class MerlinApp(App):
         grid-gutter: 1 1;
         background: $surface;
     }
-
-
     """
 
     def render(self) -> LinearGradient:
@@ -130,7 +126,6 @@ class MerlinApp(App):
 
     def compose(self) -> ComposeResult:
         yield Timer()
-
         with Grid():
             for switch in (7, 8, 9, 4, 5, 6, 1, 2, 3):
                 yield LabelSwitch(switch)

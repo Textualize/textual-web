@@ -130,7 +130,6 @@ class AppSession(Session):
         """Open the process."""
         environment = dict(os.environ.copy())
         environment["TEXTUAL_DRIVER"] = "textual.drivers.web_driver:WebDriver"
-        environment["TEXTUAL_FILTERS"] = "dim"
         environment["TEXTUAL_FPS"] = "60"
         environment["TEXTUAL_COLOR_SYSTEM"] = "truecolor"
         environment["COLUMNS"] = str(width)

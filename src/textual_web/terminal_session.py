@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from collections import deque
 import asyncio
 import array
 import fcntl
@@ -11,7 +9,7 @@ import pty
 import signal
 import termios
 
-
+from importlib_metadata import version
 import rich.repr
 
 from .poller import Poller
@@ -19,7 +17,6 @@ from .session import Session, SessionConnector
 from .types import Meta, SessionID
 
 log = logging.getLogger("textual-web")
-
 
 @rich.repr.auto
 class TerminalSession(Session):
@@ -48,6 +45,8 @@ class TerminalSession(Session):
         self.pid = pid
         self.master_fd = master_fd
         if pid == pty.CHILD:
+            os.environ["TERM_PROGRAM"] = "textual-web"
+            os.environ["TERM_PROGRAM_VERSION"] = version("textual-web")
             argv = [self.command]
             try:
                 os.execlp(argv[0], *argv)  ## Exits the app

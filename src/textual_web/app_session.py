@@ -14,6 +14,7 @@ from time import monotonic
 from datetime import timedelta
 from pathlib import Path
 
+from importlib_metadata import version
 
 import rich.repr
 
@@ -132,6 +133,8 @@ class AppSession(Session):
         environment["TEXTUAL_DRIVER"] = "textual.drivers.web_driver:WebDriver"
         environment["TEXTUAL_FPS"] = "60"
         environment["TEXTUAL_COLOR_SYSTEM"] = "truecolor"
+        environment["TERM_PROGRAM"] = "textual-web"
+        environment["TERM_PROGRAM_VERSION"] = version("textual-web")
         environment["COLUMNS"] = str(width)
         environment["ROWS"] = str(height)
         if self.devtools:

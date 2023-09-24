@@ -5,7 +5,7 @@ import logging
 from time import monotonic
 from typing import TYPE_CHECKING
 
-EXIT_POLL_RATE = 15
+EXIT_POLL_RATE = 5
 
 log = logging.getLogger("textual-web")
 

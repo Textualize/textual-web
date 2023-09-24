@@ -84,6 +84,14 @@ def print_disclaimer() -> None:
 @click.option(
     "-t", "--terminal", is_flag=True, help="Publish a remote terminal on a random URL."
 )
+@click.option(
+    "-x",
+    "--exit-on-idle",
+    type=int,
+    metavar="WAIT",
+    default=0,
+    help="Exit textual-web when no apps have been launched in WAIT seconds",
+)
 @click.option("-s", "--signup", is_flag=True, help="Create a textual-web account.")
 @click.option("--welcome", is_flag=True, help="Launch an example app.")
 @click.option("--merlin", is_flag=True, help="Launch Merlin game.")
@@ -93,23 +101,23 @@ def app(
     run: list[str],
     dev: bool,
     terminal: bool,
+    exit_on_idle: int,
     api_key: str,
     signup: bool,
     welcome: bool,
     merlin: bool,
 ) -> None:
-    """Main entry point for the CLI.
+    """Textual-web can server Textual apps and terminals."""
 
-    Args:
-        config: Path to config.
-        environment: environment switch.
-        devtools: Enable devtools.
-        terminal: Enable a terminal.
-        api_key: API key.
-        signup: Signup dialog.
-        welcome: Welcome app.
-        merlin: Merlin app.
-    """
+    # Args:
+    #     config: Path to config.
+    #     environment: environment switch.
+    #     devtools: Enable devtools.
+    #     terminal: Enable a terminal.
+    #     api_key: API key.
+    #     signup: Signup dialog.
+    #     welcome: Welcome app.
+    #     merlin: Merlin app.
 
     error_console = Console(stderr=True)
     from .config import load_config, default_config
@@ -176,6 +184,7 @@ def app(
         _environment,
         api_key=api_key or None,
         devtools=dev,
+        exit_on_idle=exit_on_idle,
     )
 
     for app_command in run:

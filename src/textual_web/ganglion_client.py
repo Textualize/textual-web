@@ -14,6 +14,7 @@ from aiohttp.client_exceptions import WSServerHandshakeError
 
 from . import constants, packets
 from .environment import Environment
+from .exit_poller import ExitPoller
 from .identity import generate
 from .packets import (
     PACKET_MAP,
@@ -76,9 +77,11 @@ class GanglionClient(Handlers):
         environment: Environment,
         api_key: str | None,
         devtools: bool = False,
+        exit_on_idle: int = 0,
     ) -> None:
         self.environment = environment
         self.websocket_url = environment.url
+        self.exit_on_idle = exit_on_idle
 
         abs_path = Path(config_path).absolute()
         path = abs_path if abs_path.is_dir() else abs_path.parent
@@ -90,6 +93,7 @@ class GanglionClient(Handlers):
         self.session_manager = SessionManager(self._poller, path, config.apps)
         self.exit_event = asyncio.Event()
         self._task: asyncio.Task | None = None
+        self._exit_poller = ExitPoller(self, exit_on_idle)
 
     @property
     def app_count(self) -> int:
@@ -162,8 +166,10 @@ class GanglionClient(Handlers):
     async def run(self) -> None:
         """Run the connection loop."""
         try:
+            self._exit_poller.start()
             await self._run()
         finally:
+            self._exit_poller.stop()
             # Shut down the poller thread
             if not WINDOWS:
                 try:
@@ -197,6 +203,12 @@ class GanglionClient(Handlers):
 
         self._task = asyncio.create_task(self.connect())
         await self._task
+
+    def force_exit(self) -> None:
+        """Force the app to exit."""
+        self.exit_event.set()
+        if self._task is not None:
+            self._task.cancel()
 
     async def connect(self) -> None:
         """Connect to the Ganglion server."""

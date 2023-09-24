@@ -31,6 +31,8 @@ from .retry import Retry
 from .session import SessionConnector
 from .session_manager import SessionManager
 from .types import Meta, RouteKey, SessionID
+from .web import run_web_interface
+
 
 if TYPE_CHECKING:
     from .config import Config
@@ -78,10 +80,12 @@ class GanglionClient(Handlers):
         api_key: str | None,
         devtools: bool = False,
         exit_on_idle: int = 0,
+        web_interface: bool = False,
     ) -> None:
         self.environment = environment
         self.websocket_url = environment.url
         self.exit_on_idle = exit_on_idle
+        self.web_interface = web_interface
 
         abs_path = Path(config_path).absolute()
         path = abs_path if abs_path.is_dir() else abs_path.parent
@@ -165,6 +169,7 @@ class GanglionClient(Handlers):
 
     async def run(self) -> None:
         """Run the connection loop."""
+
         try:
             self._exit_poller.start()
             await self._run()
@@ -201,7 +206,15 @@ class GanglionClient(Handlers):
             self._poller.set_loop(loop)
             self._poller.start()
 
-        self._task = asyncio.create_task(self.connect())
+        if self.web_interface:
+            app = await run_web_interface()
+            try:
+                self._task = asyncio.create_task(self.connect())
+            finally:
+                await app.shutdown()
+        else:
+            self._task = asyncio.create_task(self.connect())
+
         await self._task
 
     def force_exit(self) -> None:

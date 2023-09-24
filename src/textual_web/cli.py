@@ -92,6 +92,7 @@ def print_disclaimer() -> None:
     default=0,
     help="Exit textual-web when no apps have been launched in WAIT seconds",
 )
+@click.option("-w", "--web-interface", is_flag=True, help="Enable web interface")
 @click.option("-s", "--signup", is_flag=True, help="Create a textual-web account.")
 @click.option("--welcome", is_flag=True, help="Launch an example app.")
 @click.option("--merlin", is_flag=True, help="Launch Merlin game.")
@@ -102,6 +103,7 @@ def app(
     dev: bool,
     terminal: bool,
     exit_on_idle: int,
+    web_interface: bool,
     api_key: str,
     signup: bool,
     welcome: bool,
@@ -185,6 +187,7 @@ def app(
         api_key=api_key or None,
         devtools=dev,
         exit_on_idle=exit_on_idle,
+        web_interface=web_interface,
     )
 
     for app_command in run:

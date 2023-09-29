@@ -98,6 +98,7 @@ class GanglionClient(Handlers):
         self.exit_event = asyncio.Event()
         self._task: asyncio.Task | None = None
         self._exit_poller = ExitPoller(self, exit_on_idle)
+        self._connected_event = asyncio.Event()
 
     @property
     def app_count(self) -> int:
@@ -207,7 +208,7 @@ class GanglionClient(Handlers):
             self._poller.start()
 
         if self.web_interface:
-            app = await run_web_interface()
+            app = await run_web_interface(self._connected_event)
             try:
                 self._task = asyncio.create_task(self.connect())
             finally:
@@ -241,6 +242,7 @@ class GanglionClient(Handlers):
         retry = Retry()
 
         async for retry_count in retry:
+            self._connected_event.clear()
             if self.exit_event.is_set():
                 break
             try:
@@ -325,19 +327,22 @@ class GanglionClient(Handlers):
     async def post_connect(self) -> None:
         """Called immediately after connecting to server."""
         # Inform the server about our apps
-        apps = [
-            app.model_dump(include={"name", "slug", "color", "terminal"})
-            for app in self.config.apps
-        ]
-        if WINDOWS:
-            filter_apps = [app for app in apps if not app["terminal"]]
-            if filter_apps != apps:
-                log.warn(
-                    "Sorry, textual-web does not currently support terminals on Windows"
-                )
-            apps = filter_apps
+        try:
+            apps = [
+                app.model_dump(include={"name", "slug", "color", "terminal"})
+                for app in self.config.apps
+            ]
+            if WINDOWS:
+                filter_apps = [app for app in apps if not app["terminal"]]
+                if filter_apps != apps:
+                    log.warn(
+                        "Sorry, textual-web does not currently support terminals on Windows"
+                    )
+                apps = filter_apps
 
-        await self.send(packets.DeclareApps(apps))
+            await self.send(packets.DeclareApps(apps))
+        finally:
+            self._connected_event.set()
 
     async def send(self, packet: Packet) -> bool:
         """Send a packet.

@@ -4,6 +4,8 @@ Textual Web publishes [Textual](https://github.com/Textualize/textual) apps and 
 
 Currently in a beta phase &mdash; help us test!
 
+[Hacker News discussion](https://news.ycombinator.com/item?id=37418424)
+
 ## Getting Started
 
 Textual Web is a Python application, but you don't need to be a Python developer to run it.

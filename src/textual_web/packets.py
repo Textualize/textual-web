@@ -1,7 +1,7 @@
 """
 This file is auto-generated from packets.yml and packets.py.template
 
-Time: Sun Aug 27 07:38:29 2023
+Time: Tue Nov 28 13:57:53 2023
 Version: 1
 
 To regenerate run `make packets.py` (in src directory)
@@ -66,6 +66,12 @@ class PacketType(IntEnum):
 
     # Notify the client that the terminal has change dimensions.
     NOTIFY_TERMINAL_SIZE = 11  # See NotifyTerminalSize()
+
+    # App has focus.
+    FOCUS = 12  # See Focus()
+
+    # App was blurred.
+    BLUR = 13  # See Blur()
 
 
 class Packet(tuple):
@@ -777,6 +783,100 @@ class NotifyTerminalSize(Packet):
         return self[3]
 
 
+# PacketType.FOCUS (12)
+class Focus(Packet):
+    """App has focus.
+
+    Args:
+        route_key (str): Route key.
+
+    """
+
+    sender: ClassVar[str] = "both"
+    """Permitted sender, should be "client", "server", or "both"."""
+    handler_name: ClassVar[str] = "on_focus"
+    """Name of the method used to handle this packet."""
+    type: ClassVar[PacketType] = PacketType.FOCUS
+    """The packet type enumeration."""
+
+    _attributes: ClassVar[list[tuple[str, Type]]] = [
+        ("route_key", str),
+    ]
+    _attribute_count = 1
+    _get_handler = attrgetter("on_focus")
+
+    def __new__(cls, route_key: str) -> "Focus":
+        return tuple.__new__(cls, (PacketType.FOCUS, route_key))
+
+    @classmethod
+    def build(cls, route_key: str) -> "Focus":
+        """Build and validate a packet from its attributes."""
+        if not isinstance(route_key, str):
+            raise TypeError(
+                f'packets.Focus Type of "route_key" incorrect; expected str, found {type(route_key)}'
+            )
+        return tuple.__new__(cls, (PacketType.FOCUS, route_key))
+
+    def __repr__(self) -> str:
+        _type, route_key = self
+        return f"Focus({abbreviate_repr(route_key)})"
+
+    def __rich_repr__(self) -> rich.repr.Result:
+        yield "route_key", self.route_key
+
+    @property
+    def route_key(self) -> str:
+        """Route key."""
+        return self[1]
+
+
+# PacketType.BLUR (13)
+class Blur(Packet):
+    """App was blurred.
+
+    Args:
+        route_key (str): Route key.
+
+    """
+
+    sender: ClassVar[str] = "both"
+    """Permitted sender, should be "client", "server", or "both"."""
+    handler_name: ClassVar[str] = "on_blur"
+    """Name of the method used to handle this packet."""
+    type: ClassVar[PacketType] = PacketType.BLUR
+    """The packet type enumeration."""
+
+    _attributes: ClassVar[list[tuple[str, Type]]] = [
+        ("route_key", str),
+    ]
+    _attribute_count = 1
+    _get_handler = attrgetter("on_blur")
+
+    def __new__(cls, route_key: str) -> "Blur":
+        return tuple.__new__(cls, (PacketType.BLUR, route_key))
+
+    @classmethod
+    def build(cls, route_key: str) -> "Blur":
+        """Build and validate a packet from its attributes."""
+        if not isinstance(route_key, str):
+            raise TypeError(
+                f'packets.Blur Type of "route_key" incorrect; expected str, found {type(route_key)}'
+            )
+        return tuple.__new__(cls, (PacketType.BLUR, route_key))
+
+    def __repr__(self) -> str:
+        _type, route_key = self
+        return f"Blur({abbreviate_repr(route_key)})"
+
+    def __rich_repr__(self) -> rich.repr.Result:
+        yield "route_key", self.route_key
+
+    @property
+    def route_key(self) -> str:
+        """Route key."""
+        return self[1]
+
+
 # A mapping of the packet id on to the packet class
 PACKET_MAP: dict[int, type[Packet]] = {
     1: Ping,
@@ -790,6 +890,8 @@ PACKET_MAP: dict[int, type[Packet]] = {
     9: RoutePing,
     10: RoutePong,
     11: NotifyTerminalSize,
+    12: Focus,
+    13: Blur,
 }
 
 # A mapping of the packet name on to the packet class
@@ -805,6 +907,8 @@ PACKET_NAME_MAP: dict[str, type[Packet]] = {
     "routeping": RoutePing,
     "routepong": RoutePong,
     "notifyterminalsize": NotifyTerminalSize,
+    "focus": Focus,
+    "blur": Blur,
 }
 
 
@@ -863,6 +967,14 @@ class Handlers:
 
     async def on_notify_terminal_size(self, packet: NotifyTerminalSize) -> None:
         """Notify the client that the terminal has change dimensions."""
+        await self.on_default(packet)
+
+    async def on_focus(self, packet: Focus) -> None:
+        """App has focus."""
+        await self.on_default(packet)
+
+    async def on_blur(self, packet: Blur) -> None:
+        """App was blurred."""
         await self.on_default(packet)
 
     async def on_default(self, packet: Packet) -> None:

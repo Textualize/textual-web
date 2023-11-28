@@ -422,6 +422,7 @@ class GanglionClient(Handlers):
         await self.send(RoutePong(packet.route_key, packet.data))
 
     async def on_focus(self, packet: Focus) -> None:
+        """The remote app was focused."""
         session_process = self.session_manager.get_session_by_route_key(
             RouteKey(packet.route_key)
         )
@@ -429,6 +430,7 @@ class GanglionClient(Handlers):
             await session_process.send_meta({"type": "focus"})
 
     async def on_blur(self, packet: Blur) -> None:
+        """The remote app lost focus."""
         session_process = self.session_manager.get_session_by_route_key(
             RouteKey(packet.route_key)
         )

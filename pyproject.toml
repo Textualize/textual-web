@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "textual_web"
-version = "0.5.4"
+version = "0.6.0"
 description = "Serve Textual apps"
 authors = ["Will McGugan <will@textualize.io>"]
 license = "MIT"
@@ -9,7 +9,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-textual = "0.35.1"
+textual = "^0.43.0"
 aiohttp = "^3.8.4"
 uvloop = { version = "^0.17.0", markers = "sys_platform != 'win32'" }
 click = "^8.1.3"

@@ -236,8 +236,8 @@ class AppSession(Session):
                         await on_data(data)
                     elif type_bytes == META:
                         meta_data = json.loads(data)
-                        if meta_data.get("type") == "exit":
-                            await self.send_meta({"type": "exit"})
+                        if meta_data.get("type") in {"exit", "blur", "focus"}:
+                            await self.send_meta({"type": meta_data["type"]})
                         else:
                             await on_meta(json.loads(data))
 

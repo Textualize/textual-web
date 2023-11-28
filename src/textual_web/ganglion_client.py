@@ -17,6 +17,8 @@ from .environment import Environment
 from .exit_poller import ExitPoller
 from .identity import generate
 from .packets import (
+    Blur,
+    Focus,
     PACKET_MAP,
     Handlers,
     NotifyTerminalSize,
@@ -418,3 +420,17 @@ class GanglionClient(Handlers):
 
     async def on_route_ping(self, packet: RoutePing) -> None:
         await self.send(RoutePong(packet.route_key, packet.data))
+
+    async def on_focus(self, packet: Focus) -> None:
+        session_process = self.session_manager.get_session_by_route_key(
+            RouteKey(packet.route_key)
+        )
+        if session_process is not None:
+            await session_process.send_meta({"type": "focus"})
+
+    async def on_blur(self, packet: Blur) -> None:
+        session_process = self.session_manager.get_session_by_route_key(
+            RouteKey(packet.route_key)
+        )
+        if session_process is not None:
+            await session_process.send_meta({"type": "blur"})

@@ -79,6 +79,9 @@ command = "python calculator.py"
 
 [app.Dictionary]
 command = "python dictionary.py"
+
+[app.CodeBrowser]
+command = "python code-browser.py"
 ```
 
 The name is unimportant, but let's say you called it "serve.toml".

@@ -1,7 +1,7 @@
 """
 This file is auto-generated from packets.yml and packets.py.template
 
-Time: Tue Jul 30 10:27:41 2024
+Time: Tue Jul 30 15:38:35 2024
 Version: 1
 
 To regenerate run `make packets.py` (in src directory)
@@ -886,12 +886,13 @@ class OpenUrl(Packet):
     """Open a URL in the browser.
 
     Args:
+        route_key (str): Route key.
         url (str): URL to open.
         new_tab (bool): Open in new tab.
 
     """
 
-    sender: ClassVar[str] = "both"
+    sender: ClassVar[str] = "client"
     """Permitted sender, should be "client", "server", or "both"."""
     handler_name: ClassVar[str] = "on_open_url"
     """Name of the method used to handle this packet."""
@@ -899,18 +900,23 @@ class OpenUrl(Packet):
     """The packet type enumeration."""
 
     _attributes: ClassVar[list[tuple[str, Type]]] = [
+        ("route_key", str),
         ("url", str),
         ("new_tab", bool),
     ]
-    _attribute_count = 2
+    _attribute_count = 3
     _get_handler = attrgetter("on_open_url")
 
-    def __new__(cls, url: str, new_tab: bool) -> "OpenUrl":
-        return tuple.__new__(cls, (PacketType.OPEN_URL, url, new_tab))
+    def __new__(cls, route_key: str, url: str, new_tab: bool) -> "OpenUrl":
+        return tuple.__new__(cls, (PacketType.OPEN_URL, route_key, url, new_tab))
 
     @classmethod
-    def build(cls, url: str, new_tab: bool) -> "OpenUrl":
+    def build(cls, route_key: str, url: str, new_tab: bool) -> "OpenUrl":
         """Build and validate a packet from its attributes."""
+        if not isinstance(route_key, str):
+            raise TypeError(
+                f'packets.OpenUrl Type of "route_key" incorrect; expected str, found {type(route_key)}'
+            )
         if not isinstance(url, str):
             raise TypeError(
                 f'packets.OpenUrl Type of "url" incorrect; expected str, found {type(url)}'
@@ -919,25 +925,31 @@ class OpenUrl(Packet):
             raise TypeError(
                 f'packets.OpenUrl Type of "new_tab" incorrect; expected bool, found {type(new_tab)}'
             )
-        return tuple.__new__(cls, (PacketType.OPEN_URL, url, new_tab))
+        return tuple.__new__(cls, (PacketType.OPEN_URL, route_key, url, new_tab))
 
     def __repr__(self) -> str:
-        _type, url, new_tab = self
-        return f"OpenUrl({abbreviate_repr(url)}, {abbreviate_repr(new_tab)})"
+        _type, route_key, url, new_tab = self
+        return f"OpenUrl({abbreviate_repr(route_key)}, {abbreviate_repr(url)}, {abbreviate_repr(new_tab)})"
 
     def __rich_repr__(self) -> rich.repr.Result:
+        yield "route_key", self.route_key
         yield "url", self.url
         yield "new_tab", self.new_tab
 
     @property
+    def route_key(self) -> str:
+        """Route key."""
+        return self[1]
+
+    @property
     def url(self) -> str:
         """URL to open."""
-        return self[1]
+        return self[2]
 
     @property
     def new_tab(self) -> bool:
         """Open in new tab."""
-        return self[2]
+        return self[3]
 
 
 # A mapping of the packet id on to the packet class
@@ -1040,6 +1052,10 @@ class Handlers:
 
     async def on_blur(self, packet: Blur) -> None:
         """App was blurred."""
+        await self.on_default(packet)
+
+    async def on_open_url(self, packet: OpenUrl) -> None:
+        """Open a URL in the browser."""
         await self.on_default(packet)
 
     async def on_default(self, packet: Packet) -> None:

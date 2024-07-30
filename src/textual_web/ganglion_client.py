@@ -69,7 +69,11 @@ class _ClientConnector(SessionConnector):
         meta_type = meta.get("type")
         if meta_type == "open_url":
             await self.client.send(
-                packets.OpenUrl(url=meta["url"], new_tab=meta["new_tab"])
+                packets.OpenUrl(
+                    route_key=self.route_key,
+                    url=meta["url"],
+                    new_tab=meta["new_tab"],
+                )
             )
         else:
             log.warning(

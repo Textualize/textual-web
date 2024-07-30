@@ -65,7 +65,17 @@ class _ClientConnector(SessionConnector):
         await self.client.send(packets.SessionData(self.route_key, data))
 
     async def on_meta(self, meta: Meta) -> None:
-        pass
+        """On receiving a meta dict from the running process, send it to the Ganglion server."""
+        meta_type = meta.get("type")
+        if meta_type == "open_url":
+            await self.client.send(
+                packets.OpenUrl(url=meta["url"], new_tab=meta["new_tab"])
+            )
+        else:
+            log.warning(
+                f"Unknown meta type: {meta_type!r}. Full meta: {meta!r}.\n"
+                "You may be running a version of Textual unsupported by this version of Textual Web."
+            )
 
     async def on_close(self) -> None:
         await self.client.send(packets.SessionClose(self.session_id, self.route_key))
@@ -437,6 +447,3 @@ class GanglionClient(Handlers):
         )
         if session_process is not None:
             await session_process.send_meta({"type": "blur"})
-
-    async def on_open_url(self, packet: OpenUrl) -> None:
-        return await super().on_open_url(packet)

@@ -1042,10 +1042,6 @@ class Handlers:
         """App was blurred."""
         await self.on_default(packet)
 
-    async def on_open_url(self, packet: OpenUrl) -> None:
-        """Open a URL in the browser."""
-        await self.on_default(packet)
-
     async def on_default(self, packet: Packet) -> None:
         """Called when a packet is not handled."""
 

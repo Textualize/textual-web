@@ -191,7 +191,7 @@ class AppSession(Session):
         )
 
     async def run(self) -> None:
-        """This loop reads the processes standard output, and relays it to the websocket."""
+        """This loop reads stdout from the process and relays it through the websocket."""
 
         self.state = ProcessState.RUNNING
 
@@ -236,8 +236,9 @@ class AppSession(Session):
                         await on_data(payload)
                     elif type_bytes == META:
                         meta_data = json.loads(payload)
-                        if meta_data.get("type") in {"exit", "blur", "focus"}:
-                            await self.send_meta({"type": meta_data["type"]})
+                        meta_type = meta_data.get("type")
+                        if meta_type in {"exit", "blur", "focus"}:
+                            await self.send_meta({"type": meta_type})
                         else:
                             await on_meta(json.loads(payload))
 

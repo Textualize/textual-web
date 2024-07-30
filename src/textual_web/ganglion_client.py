@@ -22,6 +22,7 @@ from .packets import (
     PACKET_MAP,
     Handlers,
     NotifyTerminalSize,
+    OpenUrl,
     Packet,
     RoutePing,
     RoutePong,
@@ -327,7 +328,7 @@ class GanglionClient(Handlers):
             log.exception(str(error))
 
     async def post_connect(self) -> None:
-        """Called immediately after connecting to server."""
+        """Called immediately after connecting to the Ganglion server."""
         # Inform the server about our apps
         try:
             apps = [
@@ -347,7 +348,7 @@ class GanglionClient(Handlers):
             self._connected_event.set()
 
     async def send(self, packet: Packet) -> bool:
-        """Send a packet.
+        """Send a packet to the Ganglion server through the websocket.
 
         Args:
             packet: Packet to send.
@@ -436,3 +437,6 @@ class GanglionClient(Handlers):
         )
         if session_process is not None:
             await session_process.send_meta({"type": "blur"})
+
+    async def on_open_url(self, packet: OpenUrl) -> None:
+        return await super().on_open_url(packet)

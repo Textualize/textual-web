@@ -231,15 +231,15 @@ class AppSession(Session):
                     type_bytes = await readexactly(1)
                     size_bytes = await readexactly(4)
                     size = from_bytes(size_bytes, "big")
-                    data = await readexactly(size)
+                    payload = await readexactly(size)
                     if type_bytes == DATA:
-                        await on_data(data)
+                        await on_data(payload)
                     elif type_bytes == META:
-                        meta_data = json.loads(data)
+                        meta_data = json.loads(payload)
                         if meta_data.get("type") in {"exit", "blur", "focus"}:
                             await self.send_meta({"type": meta_data["type"]})
                         else:
-                            await on_meta(json.loads(data))
+                            await on_meta(json.loads(payload))
 
         except IncompleteReadError:
             # Incomplete read means that the stream was closed

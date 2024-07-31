@@ -33,3 +33,9 @@ command = "python -m textual"
 name = "Terminal"
 path = "./"
 terminal = true
+
+[app.OpenLink]
+name = "Open Link"
+slug = "open-link"
+path = "./"
+command = "python open_link.py"

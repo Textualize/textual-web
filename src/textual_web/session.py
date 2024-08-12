@@ -22,6 +22,13 @@ class SessionConnector:
             meta: Mapping of meta information.
         """
 
+    async def on_packed(self, payload: bytes) -> None:
+        """Handle data packed with msgpack from session.
+
+        Args:
+            payload: Msgpack data to handle.
+        """
+
     async def on_close(self) -> None:
         """Handle session close."""
 

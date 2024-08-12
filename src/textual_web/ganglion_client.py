@@ -81,6 +81,13 @@ class _ClientConnector(SessionConnector):
                 "You may be running a version of Textual unsupported by this version of Textual Web."
             )
 
+    async def on_packed(self, payload: bytes) -> None:
+        """Handle packed data from session.
+
+        Args:
+            payload: Msgpack data to handle.
+        """
+
     async def on_close(self) -> None:
         await self.client.send(packets.SessionClose(self.session_id, self.route_key))
         self.client.session_manager.on_session_end(self.session_id)

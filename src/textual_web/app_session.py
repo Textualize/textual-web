@@ -9,7 +9,6 @@ import logging
 import json
 import logging
 import os
-import signal
 from time import monotonic
 from datetime import timedelta
 from pathlib import Path

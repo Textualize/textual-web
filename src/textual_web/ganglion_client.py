@@ -75,6 +75,17 @@ class _ClientConnector(SessionConnector):
                     new_tab=meta["new_tab"],
                 )
             )
+        elif meta_type == "deliver_file_start":
+            await self.client.send(
+                packets.DeliverFileStart(
+                    route_key=self.route_key,
+                    delivery_key=meta["delivery_key"],
+                    file_name=Path(meta["file_name"]).name,
+                    open_method=meta["open_method"],
+                    mime_type=meta["mime_type"],
+                    encoding=meta["encoding"],
+                )
+            )
         else:
             log.warning(
                 f"Unknown meta type: {meta_type!r}. Full meta: {meta!r}.\n"

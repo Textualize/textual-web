@@ -1,7 +1,7 @@
 """
 This file is auto-generated from packets.yml and packets.py.template
 
-Time: Tue Aug 13 10:08:22 2024
+Time: Tue Aug 13 14:35:32 2024
 Version: 1
 
 To regenerate run `make packets.py` (in src directory)
@@ -79,6 +79,9 @@ class PacketType(IntEnum):
 
     # A message that has been packed with msgpack.
     PACKED_MESSAGE = 15  # See PackedMessage()
+
+    # Start delivery of a file.
+    DELIVER_FILE_START = 16  # See DeliverFileStart()
 
 
 class Packet(tuple):
@@ -1014,6 +1017,153 @@ class PackedMessage(Packet):
         return self[2]
 
 
+# PacketType.DELIVER_FILE_START (16)
+class DeliverFileStart(Packet):
+    """Start delivery of a file.
+
+    Args:
+        route_key (str): Route key.
+        delivery_key (str): Delivery key.
+        file_name (str): File name.
+        open_method (str): Open method.
+        mime_type (str): MIME type.
+        encoding (str): Encoding.
+
+    """
+
+    sender: ClassVar[str] = "client"
+    """Permitted sender, should be "client", "server", or "both"."""
+    handler_name: ClassVar[str] = "on_deliver_file_start"
+    """Name of the method used to handle this packet."""
+    type: ClassVar[PacketType] = PacketType.DELIVER_FILE_START
+    """The packet type enumeration."""
+
+    _attributes: ClassVar[list[tuple[str, Type]]] = [
+        ("route_key", str),
+        ("delivery_key", str),
+        ("file_name", str),
+        ("open_method", str),
+        ("mime_type", str),
+        ("encoding", str),
+    ]
+    _attribute_count = 6
+    _get_handler = attrgetter("on_deliver_file_start")
+
+    def __new__(
+        cls,
+        route_key: str,
+        delivery_key: str,
+        file_name: str,
+        open_method: str,
+        mime_type: str,
+        encoding: str,
+    ) -> "DeliverFileStart":
+        return tuple.__new__(
+            cls,
+            (
+                PacketType.DELIVER_FILE_START,
+                route_key,
+                delivery_key,
+                file_name,
+                open_method,
+                mime_type,
+                encoding,
+            ),
+        )
+
+    @classmethod
+    def build(
+        cls,
+        route_key: str,
+        delivery_key: str,
+        file_name: str,
+        open_method: str,
+        mime_type: str,
+        encoding: str,
+    ) -> "DeliverFileStart":
+        """Build and validate a packet from its attributes."""
+        if not isinstance(route_key, str):
+            raise TypeError(
+                f'packets.DeliverFileStart Type of "route_key" incorrect; expected str, found {type(route_key)}'
+            )
+        if not isinstance(delivery_key, str):
+            raise TypeError(
+                f'packets.DeliverFileStart Type of "delivery_key" incorrect; expected str, found {type(delivery_key)}'
+            )
+        if not isinstance(file_name, str):
+            raise TypeError(
+                f'packets.DeliverFileStart Type of "file_name" incorrect; expected str, found {type(file_name)}'
+            )
+        if not isinstance(open_method, str):
+            raise TypeError(
+                f'packets.DeliverFileStart Type of "open_method" incorrect; expected str, found {type(open_method)}'
+            )
+        if not isinstance(mime_type, str):
+            raise TypeError(
+                f'packets.DeliverFileStart Type of "mime_type" incorrect; expected str, found {type(mime_type)}'
+            )
+        if not isinstance(encoding, str):
+            raise TypeError(
+                f'packets.DeliverFileStart Type of "encoding" incorrect; expected str, found {type(encoding)}'
+            )
+        return tuple.__new__(
+            cls,
+            (
+                PacketType.DELIVER_FILE_START,
+                route_key,
+                delivery_key,
+                file_name,
+                open_method,
+                mime_type,
+                encoding,
+            ),
+        )
+
+    def __repr__(self) -> str:
+        _type, route_key, delivery_key, file_name, open_method, mime_type, encoding = (
+            self
+        )
+        return f"DeliverFileStart({abbreviate_repr(route_key)}, {abbreviate_repr(delivery_key)}, {abbreviate_repr(file_name)}, {abbreviate_repr(open_method)}, {abbreviate_repr(mime_type)}, {abbreviate_repr(encoding)})"
+
+    def __rich_repr__(self) -> rich.repr.Result:
+        yield "route_key", self.route_key
+        yield "delivery_key", self.delivery_key
+        yield "file_name", self.file_name
+        yield "open_method", self.open_method
+        yield "mime_type", self.mime_type
+        yield "encoding", self.encoding
+
+    @property
+    def route_key(self) -> str:
+        """Route key."""
+        return self[1]
+
+    @property
+    def delivery_key(self) -> str:
+        """Delivery key."""
+        return self[2]
+
+    @property
+    def file_name(self) -> str:
+        """File name."""
+        return self[3]
+
+    @property
+    def open_method(self) -> str:
+        """Open method."""
+        return self[4]
+
+    @property
+    def mime_type(self) -> str:
+        """MIME type."""
+        return self[5]
+
+    @property
+    def encoding(self) -> str:
+        """Encoding."""
+        return self[6]
+
+
 # A mapping of the packet id on to the packet class
 PACKET_MAP: dict[int, type[Packet]] = {
     1: Ping,
@@ -1031,6 +1181,7 @@ PACKET_MAP: dict[int, type[Packet]] = {
     13: Blur,
     14: OpenUrl,
     15: PackedMessage,
+    16: DeliverFileStart,
 }
 
 # A mapping of the packet name on to the packet class
@@ -1050,6 +1201,7 @@ PACKET_NAME_MAP: dict[str, type[Packet]] = {
     "blur": Blur,
     "openurl": OpenUrl,
     "packedmessage": PackedMessage,
+    "deliverfilestart": DeliverFileStart,
 }
 
 
@@ -1124,6 +1276,10 @@ class Handlers:
 
     async def on_packed_message(self, packet: PackedMessage) -> None:
         """A message that has been packed with msgpack."""
+        await self.on_default(packet)
+
+    async def on_deliver_file_start(self, packet: DeliverFileStart) -> None:
+        """Start delivery of a file."""
         await self.on_default(packet)
 
     async def on_default(self, packet: Packet) -> None:

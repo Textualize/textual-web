@@ -84,9 +84,12 @@ class _ClientConnector(SessionConnector):
     async def on_packed(self, payload: bytes) -> None:
         """Handle packed data from session.
 
+        Packed data is sent directly through to Ganglion.
+
         Args:
             payload: Msgpack data to handle.
         """
+        await self.client.send(packets.Packed(payload))
 
     async def on_close(self) -> None:
         await self.client.send(packets.SessionClose(self.session_id, self.route_key))

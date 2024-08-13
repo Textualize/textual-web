@@ -1,7 +1,7 @@
 """
 This file is auto-generated from packets.yml and packets.py.template
 
-Time: Tue Jul 30 15:38:35 2024
+Time: Tue Aug 13 10:08:22 2024
 Version: 1
 
 To regenerate run `make packets.py` (in src directory)
@@ -76,6 +76,9 @@ class PacketType(IntEnum):
 
     # Open a URL in the browser.
     OPEN_URL = 14  # See OpenUrl()
+
+    # A message that has been packed with msgpack.
+    PACKED_MESSAGE = 15  # See PackedMessage()
 
 
 class Packet(tuple):
@@ -952,6 +955,65 @@ class OpenUrl(Packet):
         return self[3]
 
 
+# PacketType.PACKED_MESSAGE (15)
+class PackedMessage(Packet):
+    """A message that has been packed with msgpack.
+
+    Args:
+        route_key (str): Route key.
+        data (bytes): The message packed bytes.
+
+    """
+
+    sender: ClassVar[str] = "client"
+    """Permitted sender, should be "client", "server", or "both"."""
+    handler_name: ClassVar[str] = "on_packed_message"
+    """Name of the method used to handle this packet."""
+    type: ClassVar[PacketType] = PacketType.PACKED_MESSAGE
+    """The packet type enumeration."""
+
+    _attributes: ClassVar[list[tuple[str, Type]]] = [
+        ("route_key", str),
+        ("data", bytes),
+    ]
+    _attribute_count = 2
+    _get_handler = attrgetter("on_packed_message")
+
+    def __new__(cls, route_key: str, data: bytes) -> "PackedMessage":
+        return tuple.__new__(cls, (PacketType.PACKED_MESSAGE, route_key, data))
+
+    @classmethod
+    def build(cls, route_key: str, data: bytes) -> "PackedMessage":
+        """Build and validate a packet from its attributes."""
+        if not isinstance(route_key, str):
+            raise TypeError(
+                f'packets.PackedMessage Type of "route_key" incorrect; expected str, found {type(route_key)}'
+            )
+        if not isinstance(data, bytes):
+            raise TypeError(
+                f'packets.PackedMessage Type of "data" incorrect; expected bytes, found {type(data)}'
+            )
+        return tuple.__new__(cls, (PacketType.PACKED_MESSAGE, route_key, data))
+
+    def __repr__(self) -> str:
+        _type, route_key, data = self
+        return f"PackedMessage({abbreviate_repr(route_key)}, {abbreviate_repr(data)})"
+
+    def __rich_repr__(self) -> rich.repr.Result:
+        yield "route_key", self.route_key
+        yield "data", self.data
+
+    @property
+    def route_key(self) -> str:
+        """Route key."""
+        return self[1]
+
+    @property
+    def data(self) -> bytes:
+        """The message packed bytes."""
+        return self[2]
+
+
 # A mapping of the packet id on to the packet class
 PACKET_MAP: dict[int, type[Packet]] = {
     1: Ping,
@@ -968,6 +1030,7 @@ PACKET_MAP: dict[int, type[Packet]] = {
     12: Focus,
     13: Blur,
     14: OpenUrl,
+    15: PackedMessage,
 }
 
 # A mapping of the packet name on to the packet class
@@ -986,6 +1049,7 @@ PACKET_NAME_MAP: dict[str, type[Packet]] = {
     "focus": Focus,
     "blur": Blur,
     "openurl": OpenUrl,
+    "packedmessage": PackedMessage,
 }
 
 
@@ -1056,6 +1120,10 @@ class Handlers:
 
     async def on_open_url(self, packet: OpenUrl) -> None:
         """Open a URL in the browser."""
+        await self.on_default(packet)
+
+    async def on_packed_message(self, packet: PackedMessage) -> None:
+        """A message that has been packed with msgpack."""
         await self.on_default(packet)
 
     async def on_default(self, packet: Packet) -> None:

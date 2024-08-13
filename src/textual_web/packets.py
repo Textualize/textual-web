@@ -1,7 +1,7 @@
 """
 This file is auto-generated from packets.yml and packets.py.template
 
-Time: Tue Aug 13 14:35:32 2024
+Time: Tue Aug 13 14:43:21 2024
 Version: 1
 
 To regenerate run `make packets.py` (in src directory)
@@ -80,8 +80,11 @@ class PacketType(IntEnum):
     # A message that has been packed with msgpack.
     PACKED_MESSAGE = 15  # See PackedMessage()
 
-    # Start delivery of a file.
+    # The app indicates to the server that it is ready to send a file.
     DELIVER_FILE_START = 16  # See DeliverFileStart()
+
+    # The server requests a chunk of a file from the running app.
+    REQUEST_DELIVER_CHUNK = 17  # See RequestDeliverChunk()
 
 
 class Packet(tuple):
@@ -1019,7 +1022,7 @@ class PackedMessage(Packet):
 
 # PacketType.DELIVER_FILE_START (16)
 class DeliverFileStart(Packet):
-    """Start delivery of a file.
+    """The app indicates to the server that it is ready to send a file.
 
     Args:
         route_key (str): Route key.
@@ -1164,6 +1167,69 @@ class DeliverFileStart(Packet):
         return self[6]
 
 
+# PacketType.REQUEST_DELIVER_CHUNK (17)
+class RequestDeliverChunk(Packet):
+    """The server requests a chunk of a file from the running app.
+
+    Args:
+        delivery_key (str): Delivery key.
+        chunk_size (int): Chunk size.
+
+    """
+
+    sender: ClassVar[str] = "server"
+    """Permitted sender, should be "client", "server", or "both"."""
+    handler_name: ClassVar[str] = "on_request_deliver_chunk"
+    """Name of the method used to handle this packet."""
+    type: ClassVar[PacketType] = PacketType.REQUEST_DELIVER_CHUNK
+    """The packet type enumeration."""
+
+    _attributes: ClassVar[list[tuple[str, Type]]] = [
+        ("delivery_key", str),
+        ("chunk_size", int),
+    ]
+    _attribute_count = 2
+    _get_handler = attrgetter("on_request_deliver_chunk")
+
+    def __new__(cls, delivery_key: str, chunk_size: int) -> "RequestDeliverChunk":
+        return tuple.__new__(
+            cls, (PacketType.REQUEST_DELIVER_CHUNK, delivery_key, chunk_size)
+        )
+
+    @classmethod
+    def build(cls, delivery_key: str, chunk_size: int) -> "RequestDeliverChunk":
+        """Build and validate a packet from its attributes."""
+        if not isinstance(delivery_key, str):
+            raise TypeError(
+                f'packets.RequestDeliverChunk Type of "delivery_key" incorrect; expected str, found {type(delivery_key)}'
+            )
+        if not isinstance(chunk_size, int):
+            raise TypeError(
+                f'packets.RequestDeliverChunk Type of "chunk_size" incorrect; expected int, found {type(chunk_size)}'
+            )
+        return tuple.__new__(
+            cls, (PacketType.REQUEST_DELIVER_CHUNK, delivery_key, chunk_size)
+        )
+
+    def __repr__(self) -> str:
+        _type, delivery_key, chunk_size = self
+        return f"RequestDeliverChunk({abbreviate_repr(delivery_key)}, {abbreviate_repr(chunk_size)})"
+
+    def __rich_repr__(self) -> rich.repr.Result:
+        yield "delivery_key", self.delivery_key
+        yield "chunk_size", self.chunk_size
+
+    @property
+    def delivery_key(self) -> str:
+        """Delivery key."""
+        return self[1]
+
+    @property
+    def chunk_size(self) -> int:
+        """Chunk size."""
+        return self[2]
+
+
 # A mapping of the packet id on to the packet class
 PACKET_MAP: dict[int, type[Packet]] = {
     1: Ping,
@@ -1182,6 +1248,7 @@ PACKET_MAP: dict[int, type[Packet]] = {
     14: OpenUrl,
     15: PackedMessage,
     16: DeliverFileStart,
+    17: RequestDeliverChunk,
 }
 
 # A mapping of the packet name on to the packet class
@@ -1202,6 +1269,7 @@ PACKET_NAME_MAP: dict[str, type[Packet]] = {
     "openurl": OpenUrl,
     "packedmessage": PackedMessage,
     "deliverfilestart": DeliverFileStart,
+    "requestdeliverchunk": RequestDeliverChunk,
 }
 
 
@@ -1279,7 +1347,11 @@ class Handlers:
         await self.on_default(packet)
 
     async def on_deliver_file_start(self, packet: DeliverFileStart) -> None:
-        """Start delivery of a file."""
+        """The app indicates to the server that it is ready to send a file."""
+        await self.on_default(packet)
+
+    async def on_request_deliver_chunk(self, packet: RequestDeliverChunk) -> None:
+        """The server requests a chunk of a file from the running app."""
         await self.on_default(packet)
 
     async def on_default(self, packet: Packet) -> None:

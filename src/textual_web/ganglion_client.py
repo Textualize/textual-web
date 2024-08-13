@@ -89,7 +89,9 @@ class _ClientConnector(SessionConnector):
         Args:
             payload: Msgpack data to handle.
         """
-        await self.client.send(packets.Packed(payload))
+        await self.client.send(
+            packets.PackedMessage(route_key=self.route_key, data=payload)
+        )
 
     async def on_close(self) -> None:
         await self.client.send(packets.SessionClose(self.session_id, self.route_key))

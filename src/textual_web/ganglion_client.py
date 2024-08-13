@@ -419,24 +419,6 @@ class GanglionClient(Handlers):
         """An info message (higher priority log) sent by the server."""
         log.info(f"<ganglion> {packet.message}")
 
-    async def on_request_deliver_chunk(
-        self, packet: packets.RequestDeliverChunk
-    ) -> None:
-        """The Ganglion server requested a chunk of a file. Forward that to the running app session.
-
-        When the meta is sent to the Textual app, it will be handled inside the WebDriver.
-        """
-        route_key = RouteKey(packet.route_key)
-        session_process = self.session_manager.get_session_by_route_key(route_key)
-        if session_process is not None:
-            await session_process.send_meta(
-                {
-                    "type": "deliver_chunk_request",
-                    "key": packet.delivery_key,
-                    "size": packet.chunk_size,
-                }
-            )
-
     async def on_session_open(self, packet: packets.SessionOpen) -> None:
         route_key = packet.route_key
         session_process = await self.session_manager.new_session(
@@ -492,3 +474,21 @@ class GanglionClient(Handlers):
         )
         if session_process is not None:
             await session_process.send_meta({"type": "blur"})
+
+    async def on_request_deliver_chunk(
+        self, packet: packets.RequestDeliverChunk
+    ) -> None:
+        """The Ganglion server requested a chunk of a file. Forward that to the running app session.
+
+        When the meta is sent to the Textual app, it will be handled inside the WebDriver.
+        """
+        route_key = RouteKey(packet.route_key)
+        session_process = self.session_manager.get_session_by_route_key(route_key)
+        if session_process is not None:
+            await session_process.send_meta(
+                {
+                    "type": "deliver_chunk_request",
+                    "key": packet.delivery_key,
+                    "size": packet.chunk_size,
+                }
+            )

@@ -1,7 +1,7 @@
 """
 This file is auto-generated from packets.yml and packets.py.template
 
-Time: Tue Aug 13 14:43:21 2024
+Time: Tue Aug 13 14:54:28 2024
 Version: 1
 
 To regenerate run `make packets.py` (in src directory)
@@ -1172,6 +1172,7 @@ class RequestDeliverChunk(Packet):
     """The server requests a chunk of a file from the running app.
 
     Args:
+        route_key (str): Route key.
         delivery_key (str): Delivery key.
         chunk_size (int): Chunk size.
 
@@ -1185,20 +1186,29 @@ class RequestDeliverChunk(Packet):
     """The packet type enumeration."""
 
     _attributes: ClassVar[list[tuple[str, Type]]] = [
+        ("route_key", str),
         ("delivery_key", str),
         ("chunk_size", int),
     ]
-    _attribute_count = 2
+    _attribute_count = 3
     _get_handler = attrgetter("on_request_deliver_chunk")
 
-    def __new__(cls, delivery_key: str, chunk_size: int) -> "RequestDeliverChunk":
+    def __new__(
+        cls, route_key: str, delivery_key: str, chunk_size: int
+    ) -> "RequestDeliverChunk":
         return tuple.__new__(
-            cls, (PacketType.REQUEST_DELIVER_CHUNK, delivery_key, chunk_size)
+            cls, (PacketType.REQUEST_DELIVER_CHUNK, route_key, delivery_key, chunk_size)
         )
 
     @classmethod
-    def build(cls, delivery_key: str, chunk_size: int) -> "RequestDeliverChunk":
+    def build(
+        cls, route_key: str, delivery_key: str, chunk_size: int
+    ) -> "RequestDeliverChunk":
         """Build and validate a packet from its attributes."""
+        if not isinstance(route_key, str):
+            raise TypeError(
+                f'packets.RequestDeliverChunk Type of "route_key" incorrect; expected str, found {type(route_key)}'
+            )
         if not isinstance(delivery_key, str):
             raise TypeError(
                 f'packets.RequestDeliverChunk Type of "delivery_key" incorrect; expected str, found {type(delivery_key)}'
@@ -1208,26 +1218,32 @@ class RequestDeliverChunk(Packet):
                 f'packets.RequestDeliverChunk Type of "chunk_size" incorrect; expected int, found {type(chunk_size)}'
             )
         return tuple.__new__(
-            cls, (PacketType.REQUEST_DELIVER_CHUNK, delivery_key, chunk_size)
+            cls, (PacketType.REQUEST_DELIVER_CHUNK, route_key, delivery_key, chunk_size)
         )
 
     def __repr__(self) -> str:
-        _type, delivery_key, chunk_size = self
-        return f"RequestDeliverChunk({abbreviate_repr(delivery_key)}, {abbreviate_repr(chunk_size)})"
+        _type, route_key, delivery_key, chunk_size = self
+        return f"RequestDeliverChunk({abbreviate_repr(route_key)}, {abbreviate_repr(delivery_key)}, {abbreviate_repr(chunk_size)})"
 
     def __rich_repr__(self) -> rich.repr.Result:
+        yield "route_key", self.route_key
         yield "delivery_key", self.delivery_key
         yield "chunk_size", self.chunk_size
 
     @property
+    def route_key(self) -> str:
+        """Route key."""
+        return self[1]
+
+    @property
     def delivery_key(self) -> str:
         """Delivery key."""
-        return self[1]
+        return self[2]
 
     @property
     def chunk_size(self) -> int:
         """Chunk size."""
-        return self[2]
+        return self[3]
 
 
 # A mapping of the packet id on to the packet class

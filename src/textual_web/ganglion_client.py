@@ -79,8 +79,8 @@ class _ClientConnector(SessionConnector):
             await self.client.send(
                 packets.DeliverFileStart(
                     route_key=self.route_key,
-                    delivery_key=meta["delivery_key"],
-                    file_name=Path(meta["file_name"]).name,
+                    delivery_key=meta["key"],
+                    file_name=Path(meta["path"]).name,
                     open_method=meta["open_method"],
                     mime_type=meta["mime_type"],
                     encoding=meta["encoding"],
@@ -482,13 +482,14 @@ class GanglionClient(Handlers):
 
         When the meta is sent to the Textual app, it will be handled inside the WebDriver.
         """
+        log.info(f"received request to deliver chunk: {packet!r}")
         route_key = RouteKey(packet.route_key)
         session_process = self.session_manager.get_session_by_route_key(route_key)
         if session_process is not None:
-            await session_process.send_meta(
-                {
-                    "type": "deliver_chunk_request",
-                    "key": packet.delivery_key,
-                    "size": packet.chunk_size,
-                }
-            )
+            meta = {
+                "type": "deliver_chunk_request",
+                "key": packet.delivery_key,
+                "size": packet.chunk_size,
+            }
+            log.info(f"sending meta to process: {meta!r}")
+            await session_process.send_meta(meta)

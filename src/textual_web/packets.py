@@ -1,7 +1,7 @@
 """
 This file is auto-generated from packets.yml and packets.py.template
 
-Time: Tue Aug 13 14:54:28 2024
+Time: Wed Aug 21 10:16:06 2024
 Version: 1
 
 To regenerate run `make packets.py` (in src directory)
@@ -77,8 +77,8 @@ class PacketType(IntEnum):
     # Open a URL in the browser.
     OPEN_URL = 14  # See OpenUrl()
 
-    # A message that has been packed with msgpack.
-    PACKED_MESSAGE = 15  # See PackedMessage()
+    # A message that has been binary encoded.
+    BINARY_ENCODED_MESSAGE = 15  # See BinaryEncodedMessage()
 
     # The app indicates to the server that it is ready to send a file.
     DELIVER_FILE_START = 16  # See DeliverFileStart()
@@ -961,21 +961,21 @@ class OpenUrl(Packet):
         return self[3]
 
 
-# PacketType.PACKED_MESSAGE (15)
-class PackedMessage(Packet):
-    """A message that has been packed with msgpack.
+# PacketType.BINARY_ENCODED_MESSAGE (15)
+class BinaryEncodedMessage(Packet):
+    """A message that has been binary encoded.
 
     Args:
         route_key (str): Route key.
-        data (bytes): The message packed bytes.
+        data (bytes): The binary encoded bytes.
 
     """
 
     sender: ClassVar[str] = "client"
     """Permitted sender, should be "client", "server", or "both"."""
-    handler_name: ClassVar[str] = "on_packed_message"
+    handler_name: ClassVar[str] = "on_binary_encoded_message"
     """Name of the method used to handle this packet."""
-    type: ClassVar[PacketType] = PacketType.PACKED_MESSAGE
+    type: ClassVar[PacketType] = PacketType.BINARY_ENCODED_MESSAGE
     """The packet type enumeration."""
 
     _attributes: ClassVar[list[tuple[str, Type]]] = [
@@ -983,27 +983,27 @@ class PackedMessage(Packet):
         ("data", bytes),
     ]
     _attribute_count = 2
-    _get_handler = attrgetter("on_packed_message")
+    _get_handler = attrgetter("on_binary_encoded_message")
 
-    def __new__(cls, route_key: str, data: bytes) -> "PackedMessage":
-        return tuple.__new__(cls, (PacketType.PACKED_MESSAGE, route_key, data))
+    def __new__(cls, route_key: str, data: bytes) -> "BinaryEncodedMessage":
+        return tuple.__new__(cls, (PacketType.BINARY_ENCODED_MESSAGE, route_key, data))
 
     @classmethod
-    def build(cls, route_key: str, data: bytes) -> "PackedMessage":
+    def build(cls, route_key: str, data: bytes) -> "BinaryEncodedMessage":
         """Build and validate a packet from its attributes."""
         if not isinstance(route_key, str):
             raise TypeError(
-                f'packets.PackedMessage Type of "route_key" incorrect; expected str, found {type(route_key)}'
+                f'packets.BinaryEncodedMessage Type of "route_key" incorrect; expected str, found {type(route_key)}'
             )
         if not isinstance(data, bytes):
             raise TypeError(
-                f'packets.PackedMessage Type of "data" incorrect; expected bytes, found {type(data)}'
+                f'packets.BinaryEncodedMessage Type of "data" incorrect; expected bytes, found {type(data)}'
             )
-        return tuple.__new__(cls, (PacketType.PACKED_MESSAGE, route_key, data))
+        return tuple.__new__(cls, (PacketType.BINARY_ENCODED_MESSAGE, route_key, data))
 
     def __repr__(self) -> str:
         _type, route_key, data = self
-        return f"PackedMessage({abbreviate_repr(route_key)}, {abbreviate_repr(data)})"
+        return f"BinaryEncodedMessage({abbreviate_repr(route_key)}, {abbreviate_repr(data)})"
 
     def __rich_repr__(self) -> rich.repr.Result:
         yield "route_key", self.route_key
@@ -1016,7 +1016,7 @@ class PackedMessage(Packet):
 
     @property
     def data(self) -> bytes:
-        """The message packed bytes."""
+        """The binary encoded bytes."""
         return self[2]
 
 
@@ -1262,7 +1262,7 @@ PACKET_MAP: dict[int, type[Packet]] = {
     12: Focus,
     13: Blur,
     14: OpenUrl,
-    15: PackedMessage,
+    15: BinaryEncodedMessage,
     16: DeliverFileStart,
     17: RequestDeliverChunk,
 }
@@ -1283,7 +1283,7 @@ PACKET_NAME_MAP: dict[str, type[Packet]] = {
     "focus": Focus,
     "blur": Blur,
     "openurl": OpenUrl,
-    "packedmessage": PackedMessage,
+    "binaryencodedmessage": BinaryEncodedMessage,
     "deliverfilestart": DeliverFileStart,
     "requestdeliverchunk": RequestDeliverChunk,
 }
@@ -1358,8 +1358,8 @@ class Handlers:
         """Open a URL in the browser."""
         await self.on_default(packet)
 
-    async def on_packed_message(self, packet: PackedMessage) -> None:
-        """A message that has been packed with msgpack."""
+    async def on_binary_encoded_message(self, packet: BinaryEncodedMessage) -> None:
+        """A message that has been binary encoded."""
         await self.on_default(packet)
 
     async def on_deliver_file_start(self, packet: DeliverFileStart) -> None:

@@ -1,7 +1,9 @@
 import io
+from pathlib import Path
 from textual import on
 from textual.app import App, ComposeResult
-from textual.widgets import Button
+from textual.events import DeliveryComplete
+from textual.widgets import Button, Input, Label
 
 
 class ScreenshotApp(App[None]):
@@ -13,6 +15,8 @@ class ScreenshotApp(App[None]):
             "screenshot: screenshot.svg / open in browser / plaintext mime",
             id="button-4",
         )
+        yield Label("Deliver custom file:")
+        yield Input(id="custom-path-input", placeholder="Path to file...")
 
     @on(Button.Pressed, selector="#button-1")
     def on_button_pressed(self) -> None:
@@ -46,6 +50,22 @@ class ScreenshotApp(App[None]):
             open_method="browser",
             mime_type="text/plain",
         )
+
+    @on(DeliveryComplete)
+    def on_delivery_complete(self, event: DeliveryComplete) -> None:
+        self.notify(title="Download complete", message=event.key)
+
+    @on(Input.Submitted)
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        path = Path(event.value)
+        if path.exists():
+            self.deliver_binary(path)
+        else:
+            self.notify(
+                title="Invalid path",
+                message="The path does not exist.",
+                severity="error",
+            )
 
 
 app = ScreenshotApp()

@@ -482,7 +482,6 @@ class GanglionClient(Handlers):
 
         When the meta is sent to the Textual app, it will be handled inside the WebDriver.
         """
-        log.info(f"received request to deliver chunk: {packet!r}")
         route_key = RouteKey(packet.route_key)
         session_process = self.session_manager.get_session_by_route_key(route_key)
         if session_process is not None:
@@ -491,5 +490,4 @@ class GanglionClient(Handlers):
                 "key": packet.delivery_key,
                 "size": packet.chunk_size,
             }
-            log.info(f"sending meta to process: {meta!r}")
             await session_process.send_meta(meta)

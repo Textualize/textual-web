@@ -92,16 +92,16 @@ class _ClientConnector(SessionConnector):
                 "You may be running a version of Textual unsupported by this version of Textual Web."
             )
 
-    async def on_packed(self, payload: bytes) -> None:
-        """Handle packed data from session.
+    async def on_binary_encoded_message(self, payload: bytes) -> None:
+        """Handle binary encoded data from the process.
 
-        Packed data is sent directly through to Ganglion.
+        This data is forwarded directly to Ganglion.
 
         Args:
-            payload: Msgpack data to handle.
+            payload: Binary encoded data to forward to Ganglion.
         """
         await self.client.send(
-            packets.PackedMessage(route_key=self.route_key, data=payload)
+            packets.BinaryEncodedMessage(route_key=self.route_key, data=payload)
         )
 
     async def on_close(self) -> None:

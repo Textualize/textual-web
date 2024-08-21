@@ -196,7 +196,7 @@ class AppSession(Session):
 
         META = b"M"
         DATA = b"D"
-        PACKED = b"P"
+        BINARY_ENCODED = b"P"
 
         stderr_data = io.BytesIO()
 
@@ -217,7 +217,7 @@ class AppSession(Session):
 
         on_data = self._connector.on_data
         on_meta = self._connector.on_meta
-        on_packed = self._connector.on_packed
+        on_binary_encoded_message = self._connector.on_binary_encoded_message
         try:
             ready = False
             for _ in range(10):
@@ -242,8 +242,8 @@ class AppSession(Session):
                             await self.send_meta({"type": meta_type})
                         else:
                             await on_meta(json.loads(payload))
-                    elif type_bytes == PACKED:
-                        await on_packed(payload)
+                    elif type_bytes == BINARY_ENCODED:
+                        await on_binary_encoded_message(payload)
 
         except IncompleteReadError:
             # Incomplete read means that the stream was closed

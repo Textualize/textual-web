@@ -75,11 +75,34 @@ class _ClientConnector(SessionConnector):
                     new_tab=meta["new_tab"],
                 )
             )
+        elif meta_type == "deliver_file_start":
+            await self.client.send(
+                packets.DeliverFileStart(
+                    route_key=self.route_key,
+                    delivery_key=meta["key"],
+                    file_name=Path(meta["path"]).name,
+                    open_method=meta["open_method"],
+                    mime_type=meta["mime_type"],
+                    encoding=meta["encoding"],
+                )
+            )
         else:
             log.warning(
                 f"Unknown meta type: {meta_type!r}. Full meta: {meta!r}.\n"
                 "You may be running a version of Textual unsupported by this version of Textual Web."
             )
+
+    async def on_binary_encoded_message(self, payload: bytes) -> None:
+        """Handle binary encoded data from the process.
+
+        This data is forwarded directly to Ganglion.
+
+        Args:
+            payload: Binary encoded data to forward to Ganglion.
+        """
+        await self.client.send(
+            packets.BinaryEncodedMessage(route_key=self.route_key, data=payload)
+        )
 
     async def on_close(self) -> None:
         await self.client.send(packets.SessionClose(self.session_id, self.route_key))
@@ -451,3 +474,20 @@ class GanglionClient(Handlers):
         )
         if session_process is not None:
             await session_process.send_meta({"type": "blur"})
+
+    async def on_request_deliver_chunk(
+        self, packet: packets.RequestDeliverChunk
+    ) -> None:
+        """The Ganglion server requested a chunk of a file. Forward that to the running app session.
+
+        When the meta is sent to the Textual app, it will be handled inside the WebDriver.
+        """
+        route_key = RouteKey(packet.route_key)
+        session_process = self.session_manager.get_session_by_route_key(route_key)
+        if session_process is not None:
+            meta = {
+                "type": "deliver_chunk_request",
+                "key": packet.delivery_key,
+                "size": packet.chunk_size,
+            }
+            await session_process.send_meta(meta)

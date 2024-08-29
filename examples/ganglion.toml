@@ -39,3 +39,9 @@ name = "Open Link"
 slug = "open-link"
 path = "./"
 command = "python open_link.py"
+
+[app.Download]
+name = "Download"
+slug = "download"
+path = "./"
+command = "python download.py"

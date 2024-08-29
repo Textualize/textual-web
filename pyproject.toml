@@ -8,7 +8,7 @@ readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.8.1"
 textual = "^0.43.0"
 # textual = { path = "../textual/", develop = true }
 aiohttp = "^3.9.3"

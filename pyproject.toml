@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "textual_web"
-version = "0.7.0"
+version = "0.8.0"
 description = "Serve Textual apps"
 authors = ["Will McGugan <will@textualize.io>"]
 license = "MIT"
